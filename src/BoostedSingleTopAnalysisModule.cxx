@@ -11,7 +11,7 @@
 #include "UHH2/common/include/JetIds.h"
 #include "UHH2/common/include/NSelections.h"
 #include "UHH2/common/include/TTbarReconstruction.h"
-#include "UHH2/common/include/JetHists.h"
+#include "UHH2/common/include/JetHists.h" // contains BTagMCEfficiencyHists
 #include "UHH2/common/include/TopPtReweight.h"
 #include "UHH2/common/include/MuonIds.h"
 #include "UHH2/common/include/ElectronIds.h"
@@ -57,11 +57,11 @@ namespace uhh2 {
     // Scale factors & Uncertainties
     std::unique_ptr<AnalysisModule> sf_muon_id, sf_muon_iso, sf_muon_trigger, sf_muon_trk;
     std::unique_ptr<AnalysisModule> sf_ele_id, sf_ele_rec;
-    //std::unique_ptr<AnalysisModule> sf_btag_tight;
+    std::unique_ptr<AnalysisModule> sf_btag_tight;
 
     std::string sys_muon_id, sys_muon_iso, sys_muon_trigger, sys_muon_trk;
     std::string sys_ele_id, sys_ele_rec;
-    //std::string sys_btag_tight;
+    std::string sys_btag_tight;
 
     std::unique_ptr<AnalysisModule> sf_top_pt_reweight;
     bool do_top_pt_reweight;
@@ -88,7 +88,7 @@ namespace uhh2 {
     std::unique_ptr<AndHists> hist_presel, hist_nbjetcut_loose, hist_nbjetcut_tight; //hist_2bjetcut_tight, hist_1bjetcut_tight; 
     std::unique_ptr<MatchHists> hist_match_tw, hist_match_tt;
     std::unique_ptr<MVAHists> hist_mva;
-    //std::unique_ptr<Hists> hist_BTagMCEfficiency;
+    std::unique_ptr<Hists> hist_BTagMCEfficiency;
 
     // --- Declare new Output for TMVA --- //
     Event::Handle<double> h_weight;
@@ -106,7 +106,8 @@ namespace uhh2 {
     Event::Handle<double> h_ht_jets;
 
     bool do_mva;
-    MVADiscriminator *discr_ele_, *discr_muo_;
+    //MVADiscriminator *discr_ele_, *discr_muo_;
+    MVADiscriminator *discr_BDT_;
     Event::Handle<double> h_mvadiscr;
 
   };
@@ -131,7 +132,7 @@ namespace uhh2 {
     sys_ele_id       = ctx.get("Systematic_EleID");
     sys_ele_rec      = ctx.get("Systematic_EleRec");
  
-    //sys_btag_tight   = ctx.get("Systematic_BTag");
+    sys_btag_tight   = ctx.get("Systematic_BTag");
     sys_toptag       = ctx.get("Systematic_TopTag");
     sys_L1           = ctx.get("Systematic_L1");
     sys_pu           = ctx.get("Systematic_PU");
@@ -213,7 +214,7 @@ namespace uhh2 {
 
     sf_top_pt_reweight.reset(new TopPtReweight(ctx, 0.0615, -0.0005, "", "", do_top_pt_reweight, 1.0)); // https://twiki.cern.ch/twiki/bin/view/CMS/TopPtReweighting
    
-    //sf_btag_tight.reset(new MCBTagScaleFactor(ctx, btag_wp_tight, "jets", sys_btag_tight, "mujets", "incl", "MCBtagEfficienciesTight"));
+    sf_btag_tight.reset(new MCBTagScaleFactor(ctx, btag_wp_tight, "jets", sys_btag_tight, "mujets", "incl", "MCBtagEfficienciesTight"));
 
 
     scale_variation.reset(new MCScaleVariation(ctx));
@@ -223,7 +224,7 @@ namespace uhh2 {
     hist_presel.reset(new AndHists(ctx, "PreSel"));
     hist_presel->add_hist(new HOTVRHists(ctx, "PreSel_HOTVRtagged", id_toptag));
 
-    //hist_BTagMCEfficiency.reset(new BTagMCEfficiencyHists(ctx, "BTagMCEfficiency", btag_wp_tight));
+    hist_BTagMCEfficiency.reset(new BTagMCEfficiencyHists(ctx, "BTagMCEfficiency", btag_wp_tight));
 
     sel_nbjetcut_tight.reset(new NJetSelection(1, -1, id_btag_tight));
     hist_nbjetcut_tight.reset(new AndHists(ctx, "NBJetCutTight"));
@@ -249,8 +250,10 @@ namespace uhh2 {
     h_top_eta = ctx.declare_event_output<double>("top_eta");
     h_ht_jets = ctx.declare_event_output<double>("ht_jets");
 
-    if(do_mva && is_ele)      discr_ele_ = new MVADiscriminator("");
-    else if(do_mva && is_muo) discr_muo_ = new MVADiscriminator("/nfs/dust/cms/user/matthies/BoostedSingleTop/RunII_80X_v5/Analysis/tmva/"); // needs to be updated once the weight file is produced
+    //if(do_mva && is_ele)      discr_ele_ = new MVADiscriminator("");
+    //else if(do_mva && is_muo) discr_muo_ = new MVADiscriminator("/nfs/dust/cms/user/matthies/BoostedSingleTop/RunII_80X_v5/Analysis/tmva/"); // needs to be updated once the weight file is produced
+
+    if(do_mva) discr_BDT_ = new MVADiscriminator("/nfs/dust/cms/user/matthies/Analysis_80x_v5/CMSSW_8_0_24_patch1/src/UHH2/BoostedSingleTop/tmva_comb/weights/TMVAClassification_BDT_100_25_05.weights.xml");
 
     if(do_mva) h_mvadiscr = ctx.declare_event_output<double>("mvadiscr");
 
@@ -294,10 +297,10 @@ namespace uhh2 {
     // Cuts on events regarding the number of b-jets //
    //===============================================//
 
-    //hist_BTagMCEfficiency->fill(event);
-    //sf_btag_tight->process(event);
+    hist_BTagMCEfficiency->fill(event);
 
     if(!sel_nbjetcut_tight->passes(event)) return false;
+    sf_btag_tight->process(event);
     hist_nbjetcut_tight->fill(event);
 
 
@@ -430,14 +433,15 @@ namespace uhh2 {
     if(do_mva)
       {
 	double mvaD = -100;
-	if(is_ele)
+	/*if(is_ele)
 	  {
 	    mvaD = discr_ele_->eval(float(n_btags_tight), float(deltaPhi(lepton, bjet0.v4())), float(deltaPhi(topjet, bjet0.v4())), float(M_LepNuB.at(0)), float(pt_balance), float(Pt_Wass.at(0)), float(lepton.pt()), float(lepton.eta()), float(deltaphi_leptonnextjet));
 	  }
 	else if(is_muo)
 	  {
 	    mvaD = discr_muo_->eval(float(n_btags_tight), float(deltaPhi(lepton, bjet0.v4())), float(deltaPhi(topjet, bjet0.v4())), float(M_LepNuB.at(0)), float(pt_balance), float(Pt_Wass.at(0)), float(lepton.pt()), float(lepton.eta()), float(deltaphi_leptonnextjet));
-	  }
+	    }*/
+	mvaD = discr_BDT_->eval(float(n_btags_tight), float(deltaPhi(lepton, bjet0.v4())), float(deltaPhi(topjet, bjet0.v4())), float(M_LepNuB.at(0)), float(pt_balance), float(Pt_Wass.at(0)), float(lepton.pt()), float(lepton.eta()), float(deltaphi_leptonnextjet));
 	event.set(h_mvadiscr, mvaD);                     // firstly, set the MVA discriminator value, then ...
 	hist_mva->fill_(event, mvaD, n_btags_tight);     // ..., secondly, use it to fill this histogram class
       }
