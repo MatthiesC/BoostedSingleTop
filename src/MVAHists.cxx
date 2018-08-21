@@ -100,6 +100,7 @@ void MVAHists::fill_(const Event & e, const double & mvaD, const int & n_btags)
   // Now fill the histograms ...
   H_mvaD->Fill(mvaD, w);
   H_mvaD_20bins->Fill(mvaD, w);
+  H_mvaD_rebin->Fill(mvaD, w);
   if(n_btags == 1) H_mvaD_1b->Fill(mvaD, w);
   else if(n_btags == 2) H_mvaD_2b->Fill(mvaD, w);
   
