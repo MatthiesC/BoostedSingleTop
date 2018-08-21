@@ -128,7 +128,7 @@ int TMVAClassification_comb( TString myMethodList = "" )
    Use["SVM"]             = 0;
    // 
    // --- Boosted Decision Trees
-   Use["BDT"]             = 0; // uses Adaptive Boost
+   Use["BDT_orig"]             = 0; // uses Adaptive Boost
    Use["BDTG"]            = 0; // uses Gradient Boost
    Use["BDTB"]            = 0; // uses Bagging
    Use["BDTD"]            = 0; // decorrelation + Adaptive Boost
@@ -148,7 +148,7 @@ int TMVAClassification_comb( TString myMethodList = "" )
    // AdaBoost
    Use["BDT_50_25_05"]  = 0;
    Use["BDT_80_25_05"]  = 0;
-   Use["BDT_100_25_05"] = 1;
+   Use["BDT"] = 1; // Use["BDT_100_25_05"] = 1; 
    Use["BDT_50_50_05"]  = 0;
    Use["BDT_80_50_05"]  = 0;
    Use["BDT_100_50_05"] = 0;
@@ -162,9 +162,9 @@ int TMVAClassification_comb( TString myMethodList = "" )
    // Final
    Use["BDT_50_25_03"] = 0;
    // More trees again
-   Use["BDT_100_25_02"] = 1;
-   Use["BDT_100_25_035"] = 1;
-   Use["BDT_100_25_07"] = 1;
+   Use["BDT_100_25_02"] = 0;
+   Use["BDT_100_25_035"] = 0;
+   Use["BDT_100_25_07"] = 0;
 
    // 
    // --- Friedman's RuleFit method, ie, an optimised series of cuts ("rules")
@@ -554,8 +554,8 @@ int TMVAClassification_comb( TString myMethodList = "" )
       factory->BookMethod( TMVA::Types::kBDT, "BDTG",
                            "!H:!V:NTrees=1000:MinNodeSize=2.5%:BoostType=Grad:Shrinkage=0.10:UseBaggedBoost:BaggedSampleFraction=0.5:nCuts=20:MaxDepth=2" );
 
-   if (Use["BDT"])  // Adaptive Boost
-      factory->BookMethod( TMVA::Types::kBDT, "BDT",
+   if (Use["BDT_orig"])  // Adaptive Boost
+      factory->BookMethod( TMVA::Types::kBDT, "BDT_orig",
                            "!H:!V:NTrees=850:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
 
    if (Use["BDTB"]) // Bagging
@@ -618,8 +618,8 @@ int TMVAClassification_comb( TString myMethodList = "" )
    if (Use["BDT_80_25_05"])
       factory->BookMethod( TMVA::Types::kBDT, "BDT_80_25_05",
                            "!H:!V:NTrees=80:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
-   if (Use["BDT_100_25_05"])
-      factory->BookMethod( TMVA::Types::kBDT, "BDT_100_25_05",
+   if (Use["BDT"]) // BDT_100_25_05
+      factory->BookMethod( TMVA::Types::kBDT, "BDT",
                            "!H:!V:NTrees=100:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
    if (Use["BDT_50_50_05"])
       factory->BookMethod( TMVA::Types::kBDT, "BDT_50_50_05",
