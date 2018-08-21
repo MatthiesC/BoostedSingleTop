@@ -21,7 +21,11 @@ namespace uhh2 {
     uhh2::Event::Handle<FlavorParticle> h_primlep;
 
     // Declare all histograms here ...
-    TH1F *H_mvaD, *H_mvaD_20bins, *H_mvaD_1b, *H_mvaD_2b;
+    TH1F *H_mvaD;
+    TH1F *H_mvaD_20bins;
+    TH1F *H_mvaD_rebin;
+    TH1F *H_mvaD_1b;
+    TH1F *H_mvaD_2b;
 
     TH1F* H_nocuts_top_pt_1000;
     TH1F* H_nocuts_top_pt_rebin;
@@ -42,6 +46,30 @@ namespace uhh2 {
 
     TH1F* H_BDTcut_lept_pt;
     TH1F* H_BDTcut_lept_eta;
+
+    TH1F* H_200to300_BDT;
+    TH1F* H_200to300_BDT_rebin;
+    TH1F* H_200to300_top_eta;
+    TH1F* H_200to300_lept_pt;
+    TH1F* H_200to300_lept_eta;
+
+    TH1F* H_300to400_BDT;
+    TH1F* H_300to400_BDT_rebin;
+    TH1F* H_300to400_top_eta;
+    TH1F* H_300to400_lept_pt;
+    TH1F* H_300to400_lept_eta;
+
+    TH1F* H_400to600_BDT;
+    TH1F* H_400to600_BDT_rebin;
+    TH1F* H_400to600_top_eta;
+    TH1F* H_400to600_lept_pt;
+    TH1F* H_400to600_lept_eta;
+
+    TH1F* H_600to1200_BDT;
+    TH1F* H_600to1200_BDT_rebin;
+    TH1F* H_600to1200_top_eta;
+    TH1F* H_600to1200_lept_pt;
+    TH1F* H_600to1200_lept_eta;
 
   };
    
