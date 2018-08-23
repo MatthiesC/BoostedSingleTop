@@ -226,18 +226,19 @@ int TMVAClassification_comb( TString myMethodList = "" )
    factory->AddVariable( "var3",                "Variable 3", "units", 'F' );
    factory->AddVariable( "var4",                "Variable 4", "units", 'F' );*/
 
-   factory->AddVariable( "n_btags", "N of b-tags", "", 'I' );
-   factory->AddVariable( "deltaphi_bottomlepton", "#Delta#phi(l,b)", "rad", 'F' );
-   factory->AddVariable( "deltaphi_bottomtoptag", "#Delta#phi(t,b)", "rad", 'F' );
-   factory->AddVariable( "pseudotop_mass", "l#nub mass", "GeV", 'F' );
-   factory->AddVariable( "ptbalance", "pT balance", "", 'F' ); //between top-jet and associated W boson
-   factory->AddVariable( "wass_pt", "asso. W pT", "GeV", 'F' );
-   factory->AddVariable( "lepton_pt", "lepton pT", "GeV", 'F' );
-   factory->AddVariable( "lepton_eta", "lepton #eta", "", 'F' );
-   factory->AddVariable( "deltaphi_leptonnextjet", "#Delta#phi(l,jet)", "rad", 'F' );
-   //factory->AddVariable( "top_pt", "top-jet pT", "GeV", 'F' );
-   //factory->AddVariable( "top_eta", "top-jet #eta", "", 'F' );
-   //factory->AddVariable( "ht_jets", "HT jets", "GeV", 'F' );
+   factory->AddVariable( "tmva_n_btags", "N of b-tags", "", 'I' );
+   factory->AddVariable( "tmva_deltaphi_bottomlepton", "#Delta#phi(l,b)", "rad", 'F' );
+   factory->AddVariable( "tmva_deltaphi_bottomtoptag", "#Delta#phi(t,b)", "rad", 'F' );
+   factory->AddVariable( "tmva_pseudotop_mass", "l#nub mass", "GeV", 'F' );
+   factory->AddVariable( "tmva_ptbalance", "pT balance", "", 'F' ); //between top-jet and associated W boson
+   factory->AddVariable( "tmva_wass_pt", "asso. W pT", "GeV", 'F' );
+   factory->AddVariable( "tmva_lepton_pt", "lepton pT", "GeV", 'F' );
+   factory->AddVariable( "tmva_lepton_eta", "lepton #eta", "", 'F' );
+   factory->AddVariable( "tmva_deltaphi_leptonnextjet", "#Delta#phi(l,jet)", "rad", 'F' );
+   factory->AddVariable( "tmva_met_pt", "missing ET", "GeV", 'F' );
+   //factory->AddVariable( "tmva_top_pt", "top-jet pT", "GeV", 'F' );
+   //factory->AddVariable( "tmva_top_eta", "top-jet #eta", "", 'F' );
+   //factory->AddVariable( "tmva_ht_jets", "HT jets", "GeV", 'F' );
 
    // You can add so-called "Spectator variables", which are not used in the MVA training,
    // but will appear in the final "TestTree" produced by TMVA. This TestTree will contain the
@@ -379,8 +380,8 @@ int TMVAClassification_comb( TString myMethodList = "" )
    // Set individual event weights (the variables must exist in the original TTree)
    //    for signal    : factory->SetSignalWeightExpression    ("weight1*weight2");
    //    for background: factory->SetBackgroundWeightExpression("weight1*weight2");
-   factory->SetSignalWeightExpression( "weight" );
-   factory->SetBackgroundWeightExpression( "weight" );
+   factory->SetSignalWeightExpression( "tmva_weight" );
+   factory->SetBackgroundWeightExpression( "tmva_weight" );
 
    // Apply additional cuts on the signal and background samples (can be different)
    TCut mycuts = ""; // for example: TCut mycuts = "abs(var1)<0.5 && abs(var2-0.5)<1";
