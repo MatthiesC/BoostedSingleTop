@@ -429,9 +429,9 @@ namespace uhh2 {
    //==================//
 
     double mvaD = -100;
-    if(do_mva) mvaD = discr_BDT_->eval(float(n_btags_tight), float(deltaPhi(lepton.v4(), bjet0.v4())), float(deltaPhi(topjet, bjet0.v4())), float(M_LepNuB.at(0)), float(pt_balance), float(Pt_Wass.at(0)), float(lepton.v4().pt()), float(lepton.v4().eta()), float(deltaPhi(lepton, nextjet)), float(met_pt));
+    if(do_mva) mvaD = discr_BDT_->eval(float(n_btags_tight), float(deltaPhi(lepton.v4(), bjet0.v4())), float(deltaPhi(topjet, bjet0.v4())), float(M_LepNuB.at(0)), float(pt_balance), float(Pt_Wass.at(0)), float(lepton.v4().pt()), float(lepton.v4().eta()), float(deltaPhi(lepton, nextjet)));//, float(met_pt));
 
-    event.set(h_mvadiscr, mvaD);
+    if(do_mva) event.set(h_mvadiscr, mvaD);
 
     if(sel_toptags_0->passes(event)) {
       hist_mva_0t->fill_(event, mvaD, mva_inputvars);
@@ -439,6 +439,7 @@ namespace uhh2 {
     }
     else if(sel_toptags_1->passes(event)) {
       hist_mva_1t->fill_(event, mvaD, mva_inputvars);
+      //return false;
     }
 
      //======//

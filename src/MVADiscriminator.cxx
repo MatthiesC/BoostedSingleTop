@@ -17,7 +17,7 @@ MVADiscriminator::MVADiscriminator(const string & path_weightfile)
   reader_->AddVariable("tmva_lepton_pt",&floatvars_[6]);
   reader_->AddVariable("tmva_lepton_eta",&floatvars_[7]);
   reader_->AddVariable("tmva_deltaphi_leptonnextjet",&floatvars_[8]);
-  reader_->AddVariable("tmva_met_pt",&floatvars_[9]);
+  //reader_->AddVariable("tmva_met_pt",&floatvars_[9]);
   /*reader_->AddVariable("tmva_top_pt",&floatvars_[9]);
   reader_->AddVariable("tmva_top_eta",&floatvars_[10]);
   reader_->AddVariable("tmva_ht_jets",&floatvars_[11]);*/
@@ -26,7 +26,7 @@ MVADiscriminator::MVADiscriminator(const string & path_weightfile)
 
 }
 
-float MVADiscriminator::eval(float var1, float var2, float var3, float var4, float var5, float var6, float var7, float var8, float var9, float var10)
+float MVADiscriminator::eval(float var1, float var2, float var3, float var4, float var5, float var6, float var7, float var8, float var9)
 {
 
   floatvars_[0] = var1;
@@ -38,7 +38,7 @@ float MVADiscriminator::eval(float var1, float var2, float var3, float var4, flo
   floatvars_[6] = var7;
   floatvars_[7] = var8;
   floatvars_[8] = var9;
-  floatvars_[9] = var10;
+  //floatvars_[9] = var10;
   /*floatvars_[10] = var11;
   floatvars_[11] = var12;*/
       

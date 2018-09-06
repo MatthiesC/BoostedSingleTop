@@ -235,7 +235,7 @@ int TMVAClassification_comb( TString myMethodList = "" )
    factory->AddVariable( "tmva_lepton_pt", "lepton pT", "GeV", 'F' );
    factory->AddVariable( "tmva_lepton_eta", "lepton #eta", "", 'F' );
    factory->AddVariable( "tmva_deltaphi_leptonnextjet", "#Delta#phi(l,jet)", "rad", 'F' );
-   factory->AddVariable( "tmva_met_pt", "missing ET", "GeV", 'F' );
+   //factory->AddVariable( "tmva_met_pt", "missing ET", "GeV", 'F' );
    //factory->AddVariable( "tmva_top_pt", "top-jet pT", "GeV", 'F' );
    //factory->AddVariable( "tmva_top_eta", "top-jet #eta", "", 'F' );
    //factory->AddVariable( "tmva_ht_jets", "HT jets", "GeV", 'F' );

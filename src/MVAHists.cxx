@@ -176,8 +176,8 @@ void MVAHists::fill_(const Event & e, const double & mvaD, const vector<double> 
   H_mvaD_20bins->Fill(mvaD, w);
   H_mvaD_rebin->Fill(mvaD, w);
   H_mvaD_rebin01->Fill(mvaD, w);
-  /*if(mva_inputvars.at(0) == 1) H_mvaD_1b->Fill(mvaD, w);
-    else if(mva_inputvars.at(0) == 2) H_mvaD_2b->Fill(mvaD, w);*/
+  if(abs(mva_inputvars.at(0)-1) < 0.01) H_mvaD_1b->Fill(mvaD, w);
+  else if(abs(mva_inputvars.at(0)-2) < 0.01) H_mvaD_2b->Fill(mvaD, w);
   
   // before any BDT cuts ...
   H_nocuts_top_pt_1000->Fill(top_pt, w);
