@@ -13,8 +13,8 @@ public:
     virtual void fill(const uhh2::Event & ev) override;
 
 protected:
-    TH1F* shat, *M_top, *Pt_top, *Pt_top_over_shat, *eta_top, *y_top, *deltaR_top_decays, *deltaR_W_decays, *Pt_b, *eta_b, *y_b, *M_b, *Pt_W, *eta_W, *y_W, *M_W, *DecayChannel;
+    TH1F* shat, *M_top, *Pt_top, *Pt_top_over_shat, *eta_top, *y_top, *phi_top, *deltaR_top_decays, *deltaR_W_decays, *Pt_b, *eta_b, *y_b, *M_b, *Pt_W, *eta_W, *y_W, *M_W, *DecayChannel;
 
-    TH2F* shat_vs_deltaR_top, *Pt_top_vs_deltaR_top, *shat_vs_Pt_top, *Pt_top_vs_Pt_W;
+    TH2F* shat_vs_deltaR_top, *Pt_top_vs_deltaR_top, *Pt_top_vs_deltaR_top_hadronic, *shat_vs_Pt_top, *Pt_top_vs_Pt_W, *top_eta_vs_phi;
     uhh2::Event::Handle<SingleTopGen> h_singletopgen;
 };

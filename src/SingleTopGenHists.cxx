@@ -6,25 +6,28 @@ using namespace uhh2;
 
 SingleTopGenHists::SingleTopGenHists(uhh2::Context & ctx, const std::string & dirname): Hists(ctx, dirname){
 
-    shat = book< TH1F>( "shat", "#hat{s} [GeV]", 1000, 0, 5000 ) ;
-    DecayChannel = book< TH1F>( "DecayChannel", "decay channel", 11, 0, 11 ) ;
+    shat = book< TH1F>( "shat", "#hat{s} [GeV]", 500, 0, 5000 ) ;
+    DecayChannel = book< TH1F>( "DecayChannel", "decay channel", 11, -0.5, 10.5 ) ;
 
-    M_top = book< TH1F>("M_top", "M_{t} [GeV/c^{2}]", 1000, 150, 200) ;
+    M_top = book< TH1F>("M_top", "top-quark mass [GeV]", 600, 50, 350) ;
 
-    Pt_top = book< TH1F>( "Pt_top", "P_{T,t} [GeV/c]", 150, 0, 1500 ) ;
+    Pt_top = book< TH1F>( "Pt_top", "top-quark p_{T} [GeV]", 1000, 0, 2000 ) ;
     
-    Pt_top_over_shat = book< TH1F>( "Pt_top_over_shat", "P_{T,t}/#hat{s}", 1000, 0, 1 ) ;
+    Pt_top_over_shat = book< TH1F>( "Pt_top_over_shat", "top-quark p_{T}/#hat{s}", 1000, 0, 1 ) ;
     
-    eta_top = book< TH1F>( "eta_top", "#eta_{t}", 1000, -5, 5 ) ;
-    y_top = book< TH1F>( "y_top", "y_{t}", 1000, -5, 5 ) ;
+    eta_top = book< TH1F>( "eta_top", "top-quark #eta", 1000, -5, 5 ) ;
+    y_top = book< TH1F>( "y_top", "top-quark rapidity", 1000, -5, 5 ) ;
+    phi_top = book<TH1F> ( "phi_top", "top-quark #phi [rad]", 500, -M_PI, M_PI);
+    top_eta_vs_phi = book<TH2F> ("", "top-quark #eta-#phi-plane", 500, -M_PI, M_PI, 1000, -5, 5 );
      
-    deltaR_top_decays = book<TH1F>( "deltaR_top_decays", "#DeltaR(t decay prod.)",1000,0,5);
+    deltaR_top_decays = book<TH1F>( "deltaR_top_decays", "max. #DeltaR between top-quark decay products",1000,0,5);
      
-    shat_vs_deltaR_top = book<TH2F>( "shat_vs_deltaR_top", "#hat{s} [GeV] vs #DeltaR(t decay prod.)",500,0,5000,500,0,5);
+    shat_vs_deltaR_top = book<TH2F>( "shat_vs_deltaR_top", "#hat{s} [GeV] vs. #DeltaR(t decay prod.)",500,0,5000,500,0,5);
  
-    Pt_top_vs_deltaR_top = book<TH2F>( "Pt_top_vs_deltaR_top", "P_{T,t} [GeV/c] vs #DeltaR(t decay prod.)",500,0,2000,500,0,5);
+    Pt_top_vs_deltaR_top = book<TH2F>( "Pt_top_vs_deltaR_top", "P_{T,t} [GeV/c] vs. #DeltaR(t decay prod.)",500,0,2000,500,0,5);
+    Pt_top_vs_deltaR_top_hadronic = book<TH2F>( "Pt_top_vs_deltaR_top_hadronic", "P_{T,t} [GeV/c] vs. #DeltaR(t decay prod.)",500,0,2000,500,0,5);
  
-    deltaR_W_decays = book<TH1F>( "deltaR_W_decays", "#DeltaR(W decay prod.)",1000,0,5);
+    deltaR_W_decays = book<TH1F>( "deltaR_W_decays", "max. #DeltaR between W-boson decay products",1000,0,5);
 
     shat_vs_Pt_top = book<TH2F>( "shat_vs_Pt_top", "#hat{s} [GeV] vs P_{T,t} [GeV/c]",500,0,5000,500,0,2000); 
     
@@ -66,22 +69,25 @@ void SingleTopGenHists::fill(const uhh2::Event & e){
     Pt_top_over_shat->Fill( top.Pt()/sh, e.weight);
 
     eta_top->Fill( top.eta(), e.weight);
+    phi_top->Fill( top.phi(), e.weight);
+    top_eta_vs_phi->Fill(top.phi(), top.eta(), e.weight);
     y_top->Fill( top.Rapidity(), e.weight);
 
-    double deltaR_top = std::max (std::max( uhh2::deltaR(singletopgen.bTop(), singletopgen.Wdecay1() ), 
+    double deltaR_topdecays = std::max (std::max( uhh2::deltaR(singletopgen.bTop(), singletopgen.Wdecay1() ), 
 				  uhh2::deltaR(singletopgen.bTop(), singletopgen.Wdecay2() ) )
 			     , uhh2::deltaR(singletopgen.Wdecay1(), singletopgen.Wdecay2() ) );
 
 
-    deltaR_top_decays->Fill(deltaR_top,e.weight);
+    deltaR_top_decays->Fill(deltaR_topdecays,e.weight);
     
-    double deltaR_W = uhh2::deltaR(singletopgen.Wdecay1(), singletopgen.Wdecay2());
+    double deltaR_Wdecays = uhh2::deltaR(singletopgen.Wdecay1(), singletopgen.Wdecay2());
 
-    deltaR_W_decays->Fill(deltaR_W,e.weight);
+    deltaR_W_decays->Fill(deltaR_Wdecays,e.weight);
 
-    Pt_top_vs_deltaR_top->Fill(top.Pt(), deltaR_top, e.weight);
+    Pt_top_vs_deltaR_top->Fill(top.Pt(), deltaR_topdecays, e.weight);
+    if(singletopgen.IsTopHadronicDecay()) Pt_top_vs_deltaR_top_hadronic->Fill(top.Pt(), deltaR_topdecays, e.weight);
 
-    shat_vs_deltaR_top->Fill(sh, deltaR_top, e.weight);
+    shat_vs_deltaR_top->Fill(sh, deltaR_topdecays, e.weight);
     shat_vs_Pt_top->Fill(sh, top.Pt(),  e.weight);
 
     Pt_b->Fill( singletopgen.bTop().pt(), e.weight);

@@ -35,7 +35,7 @@ namespace uhh2 {
     // Declare all histograms here ...
     TH1F *H_shat, *H_DecayChannel;
 
-    TH1F *H_topgen_pt, *H_lepgen_pt, *H_topgen_eta, *H_lepgen_eta, *H_topjet_pt, *H_leprec_pt, *H_topjet_eta, *H_leprec_eta;
+    TH1F *H_topgen_pt, *H_topgen_pt_rebin, *H_lepgen_pt, *H_topgen_eta, *H_lepgen_eta, *H_topjet_pt, *H_topjet_pt_rebin, *H_leprec_pt, *H_topjet_eta, *H_leprec_eta;
     TH1F *H_match_deltaR_lep, *H_match_deltaR_top;
     TH1F *H_match_deltaPhi_lep, *H_match_deltaPhi_top, *H_match_deltaPhi_neu;
 

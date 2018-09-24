@@ -148,10 +148,32 @@ int TMVAClassification_comb( TString myMethodList = "" )
    // AdaBoost
    Use["BDT_50_25_05"]  = 0;
    Use["BDT_80_25_05"]  = 0;
-   Use["BDT"] = 1; // Use["BDT_100_25_05"] = 1; 
-   Use["BDT_50_50_05"]  = 0;
+   //Use["BDT"] = 0; // Use["BDT_100_25_05"] = 1; 
+
+
+   Use["BDT_50_50_05_20"]  = 1;
+   Use["BDT_50_50_05_15"]  = 1;
+   Use["BDT_50_50_05_10"]  = 1;
+   Use["BDT_50_25_05_20"]  = 1;
+   Use["BDT_50_25_05_15"]  = 1;
+   Use["BDT_50_25_05_10"]  = 1;
+   Use["BDT_50_50_03_20"]  = 1;
+   Use["BDT_50_50_03_15"]  = 1;
+   Use["BDT_50_50_03_10"]  = 1;
+   Use["BDT_50_25_03_20"]  = 1;
+   Use["BDT_50_25_03_15"]  = 1;
+   Use["BDT_50_25_03_10"]  = 1;
+
    Use["BDT_80_50_05"]  = 0;
-   Use["BDT_100_50_05"] = 0;
+
+   Use["BDT_100_25_04"] = 0;
+   Use["BDT_100_25_035"] = 0;
+   Use["BDT_100_25_03"] = 0;
+   Use["BDT_100_25_025"] = 0;
+   Use["BDT_100_25_02"] = 0;
+   Use["BDT_100_25_015"] = 0;
+   Use["BDT"] = 0; // Use["BDT_100_25_01"] = 0;
+
    Use["BDT_50_50_03"]  = 0;
    Use["BDT_50_50_07"]  = 0;
    Use["BDT_50_50_09"]  = 0;
@@ -161,10 +183,7 @@ int TMVAClassification_comb( TString myMethodList = "" )
    Use["BDTB_100"] = 0;
    // Final
    Use["BDT_50_25_03"] = 0;
-   // More trees again
-   Use["BDT_100_25_02"] = 0;
-   Use["BDT_100_25_035"] = 0;
-   Use["BDT_100_25_07"] = 0;
+
 
    // 
    // --- Friedman's RuleFit method, ie, an optimised series of cuts ("rules")
@@ -226,7 +245,8 @@ int TMVAClassification_comb( TString myMethodList = "" )
    factory->AddVariable( "var3",                "Variable 3", "units", 'F' );
    factory->AddVariable( "var4",                "Variable 4", "units", 'F' );*/
 
-   factory->AddVariable( "tmva_n_btags", "N of b-tags", "", 'I' );
+   // in case of 1-btag region, remove first variable:
+   //factory->AddVariable( "tmva_n_btags", "N of b-tags", "", 'I' );
    factory->AddVariable( "tmva_deltaphi_bottomlepton", "#Delta#phi(l,b)", "rad", 'F' );
    factory->AddVariable( "tmva_deltaphi_bottomtoptag", "#Delta#phi(t,b)", "rad", 'F' );
    factory->AddVariable( "tmva_pseudotop_mass", "l#nub mass", "GeV", 'F' );
@@ -619,21 +639,94 @@ int TMVAClassification_comb( TString myMethodList = "" )
    if (Use["BDT_80_25_05"])
       factory->BookMethod( TMVA::Types::kBDT, "BDT_80_25_05",
                            "!H:!V:NTrees=80:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
-   if (Use["BDT"]) // BDT_100_25_05
+   /*if (Use["BDT"]) // BDT_100_25_05
       factory->BookMethod( TMVA::Types::kBDT, "BDT",
-                           "!H:!V:NTrees=100:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
-   if (Use["BDT_50_50_05"])
-      factory->BookMethod( TMVA::Types::kBDT, "BDT_50_50_05",
-                           "!H:!V:NTrees=50:MinNodeSize=5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
+      "!H:!V:NTrees=100:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );*/
+
+
+
+
+
+
+
+   if (Use["BDT_50_50_05_20"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_50_50_05_20",
+			  "!H:!V:NTrees=50:MinNodeSize=5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
+   if (Use["BDT_50_50_05_15"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_50_50_05_15",
+			  "!H:!V:NTrees=50:MinNodeSize=5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=15" );
+   if (Use["BDT_50_50_05_10"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_50_50_05_10",
+			  "!H:!V:NTrees=50:MinNodeSize=5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=10" );
+   if (Use["BDT_50_25_05_20"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_50_25_05_20",
+			  "!H:!V:NTrees=50:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
+   if (Use["BDT_50_25_05_15"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_50_25_05_15",
+			  "!H:!V:NTrees=50:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=15" );
+   if (Use["BDT_50_25_05_10"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_50_25_05_10",
+			  "!H:!V:NTrees=50:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=10" );
+   if (Use["BDT_50_50_03_20"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_50_50_03_20",
+			  "!H:!V:NTrees=50:MinNodeSize=5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.3:SeparationType=GiniIndex:nCuts=20" );
+   if (Use["BDT_50_50_03_15"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_50_50_03_15",
+			  "!H:!V:NTrees=50:MinNodeSize=5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.3:SeparationType=GiniIndex:nCuts=15" );
+   if (Use["BDT_50_50_03_10"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_50_50_03_10",
+			  "!H:!V:NTrees=50:MinNodeSize=5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.3:SeparationType=GiniIndex:nCuts=10" );
+   if (Use["BDT_50_25_03_20"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_50_25_03_20",
+			  "!H:!V:NTrees=50:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.3:SeparationType=GiniIndex:nCuts=20" );
+   if (Use["BDT_50_25_03_15"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_50_25_03_15",
+			  "!H:!V:NTrees=50:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.3:SeparationType=GiniIndex:nCuts=15" );
+   if (Use["BDT_50_25_03_10"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_50_25_03_10",
+			  "!H:!V:NTrees=50:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.3:SeparationType=GiniIndex:nCuts=10" );
+
+
+
+
+
+
+
+
    if (Use["BDT_80_50_05"])
       factory->BookMethod( TMVA::Types::kBDT, "BDT_80_50_05",
                            "!H:!V:NTrees=80:MinNodeSize=5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
-   if (Use["BDT_100_50_05"])
-      factory->BookMethod( TMVA::Types::kBDT, "BDT_100_50_05",
-                           "!H:!V:NTrees=100:MinNodeSize=5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
+
+
+
+   if (Use["BDT_100_25_04"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_100_25_04",
+			  "!H:!V:NTrees=100:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.4:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
+   if (Use["BDT_100_25_035"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_100_25_035",
+			  "!H:!V:NTrees=100:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.35:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
+   if (Use["BDT_100_25_03"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_100_25_03",
+			  "!H:!V:NTrees=100:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.3:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
+   if (Use["BDT_100_25_025"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_100_25_025",
+			  "!H:!V:NTrees=100:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.25:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
+   if (Use["BDT_100_25_02"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_100_25_02",
+			  "!H:!V:NTrees=100:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.2:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
+   if (Use["BDT_100_25_015"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_100_25_015",
+			  "!H:!V:NTrees=100:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.15:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
+   if (Use["BDT"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT",
+			  "!H:!V:NTrees=100:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.1:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
+
+
+
+
    if (Use["BDT_50_50_03"])
-      factory->BookMethod( TMVA::Types::kBDT, "BDT_50_50_03",
-                           "!H:!V:NTrees=50:MinNodeSize=5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.3:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_50_50_03",
+			  "!H:!V:NTrees=50:MinNodeSize=5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.3:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
    if (Use["BDT_50_50_07"])
       factory->BookMethod( TMVA::Types::kBDT, "BDT_50_50_07",
                            "!H:!V:NTrees=50:MinNodeSize=5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.7:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
@@ -655,19 +748,6 @@ int TMVAClassification_comb( TString myMethodList = "" )
    if (Use["BDT_50_25_03"])
       factory->BookMethod( TMVA::Types::kBDT, "BDT_50_25_03",
                            "!H:!V:NTrees=50:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.3:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
-
-
-   // More trees again
-   if (Use["BDT_100_25_02"])
-     factory->BookMethod( TMVA::Types::kBDT, "BDT_100_25_02",
-			  "!H:!V:NTrees=200:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.2:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
-   if (Use["BDT_100_25_035"])
-     factory->BookMethod( TMVA::Types::kBDT, "BDT_100_25_035",
-			  "!H:!V:NTrees=300:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.35:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
-   if (Use["BDT_100_25_07"])
-     factory->BookMethod( TMVA::Types::kBDT, "BDT_100_25_07",
-			  "!H:!V:NTrees=400:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.7:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
-
 
 
 

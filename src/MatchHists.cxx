@@ -39,10 +39,15 @@ MatchHists::MatchHists(Context & ctx, const string & dirname, const boost::optio
   H_shat = book<TH1F>("shat", "#hat{s} [GeV]", 50, 0, 5000);
   H_DecayChannel = book<TH1F>("DecayChannel", "decay channel", 17, -0.5, 16.5);
 
+  double rebin_pt[] = {0,200,300,400,600,1200};
+  unsigned int rebin_pt_bincount = sizeof(rebin_pt)/sizeof(*rebin_pt)-1;
+
   H_topgen_pt = book<TH1F>("topgen_pt", "top quark p_{T}^{gen} [GeV]", 16, 0, 1600);
+  H_topgen_pt_rebin = book<TH1F>("topgen_pt_rebin", "top quark p_{T}^{gen} [GeV]", rebin_pt_bincount, rebin_pt);
   H_lepgen_pt = book<TH1F>("lepgen_pt", "lepton p_{T}^{gen} [GeV]", 16, 0, 1600);
 
   H_topjet_pt = book<TH1F>("topjet_pt", "top quark p_{T}^{reco} [GeV]", 16, 0, 1600);
+  H_topjet_pt_rebin = book<TH1F>("topjet_pt_rebin", "top quark p_{T}^{reco} [GeV]", rebin_pt_bincount, rebin_pt);
   H_leprec_pt = book<TH1F>("leprec_pt", "lepton p_{T}^{reco} [GeV]", 16, 0, 1600);
 
   H_topgen_eta = book<TH1F>("topgen_eta", "top quark #eta^{gen} [GeV]", 20, -4, 4);
@@ -208,9 +213,11 @@ void MatchHists::fill(const Event & e)
   H_DecayChannel->Fill(DecayChannel, w);
 
   H_topgen_pt->Fill(top.Pt(), w);
+  H_topgen_pt_rebin->Fill(top.Pt(), w);
   H_lepgen_pt->Fill(lepton.Pt(), w);
 
   H_topjet_pt->Fill(hotvrjet.v4().Pt(), w);
+  H_topjet_pt_rebin->Fill(hotvrjet.v4().Pt(), w);
   H_leprec_pt->Fill(primlept.v4().Pt(), w);
 
   H_topgen_eta->Fill(top.Eta(), w);

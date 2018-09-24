@@ -116,22 +116,22 @@ SingleTopGen::SingleTopGen(const vector<GenParticle> & genparticles, bool throw_
     
   // calculate decay channel by counting the number of charged leptons
   // in the W daughters:
-  int n_e = 0, n_m = 0, n_t = 0;
+  int n_ele = 0, n_muo = 0, n_tau = 0;
   for(const auto & wd : {m_Wdecay1, m_Wdecay2}){
     int id = abs(wd.pdgId());
-    if(id == 11) ++n_e;
-    else if(id == 13) ++n_m;
-    else if(id == 15) ++n_t;
+    if(id == 11) ++n_ele;
+    else if(id == 13) ++n_muo;
+    else if(id == 15) ++n_tau;
   }
 
   // leptonic:
-  if(n_e == 1){
+  if(n_ele == 1){
     m_type = e_ele;
   }
-  else if(n_m == 1){
+  else if(n_muo == 1){
     m_type = e_muo;
   }
-  else if(n_t == 1){
+  else if(n_tau == 1){
     m_type = e_tau;
   }
   // hadronic:

@@ -1,0 +1,230 @@
+<?xml version="1.0"?>
+<MethodSetup Method="MLP::MLP">
+  <GeneralInfo>
+    <Info name="TMVA Release" value="4.2.1 [262657]"/>
+    <Info name="ROOT Release" value="6.06/01 [394753]"/>
+    <Info name="Creator" value="matthies"/>
+    <Info name="Date" value="Fri Aug 24 00:19:20 2018"/>
+    <Info name="Host" value="Linux vocms0301.cern.ch 2.6.32-642.4.2.el6.x86_64 #1 SMP Wed Aug 24 09:19:54 CEST 2016 x86_64 x86_64 x86_64 GNU/Linux"/>
+    <Info name="Dir" value="/nfs/dust/cms/user/matthies/Analysis_80x_v5/CMSSW_8_0_24_patch1/src/UHH2/BoostedSingleTop/tmva_comb"/>
+    <Info name="Training events" value="1243584"/>
+    <Info name="TrainingTime" value="6.21651515e+03"/>
+    <Info name="AnalysisType" value="Classification"/>
+  </GeneralInfo>
+  <Options>
+    <Option name="NCycles" modified="Yes">600</Option>
+    <Option name="HiddenLayers" modified="Yes">N+5</Option>
+    <Option name="NeuronType" modified="Yes">tanh</Option>
+    <Option name="RandomSeed" modified="No">1</Option>
+    <Option name="EstimatorType" modified="No">CE</Option>
+    <Option name="NeuronInputType" modified="No">sum</Option>
+    <Option name="V" modified="Yes">False</Option>
+    <Option name="VerbosityLevel" modified="No">Default</Option>
+    <Option name="VarTransform" modified="Yes">N</Option>
+    <Option name="H" modified="Yes">True</Option>
+    <Option name="CreateMVAPdfs" modified="No">False</Option>
+    <Option name="IgnoreNegWeightsInTraining" modified="No">False</Option>
+    <Option name="TrainingMethod" modified="No">BP</Option>
+    <Option name="LearningRate" modified="No">2.000000e-02</Option>
+    <Option name="DecayRate" modified="No">1.000000e-02</Option>
+    <Option name="TestRate" modified="Yes">5</Option>
+    <Option name="EpochMonitoring" modified="No">False</Option>
+    <Option name="Sampling" modified="No">1.000000e+00</Option>
+    <Option name="SamplingEpoch" modified="No">1.000000e+00</Option>
+    <Option name="SamplingImportance" modified="No">1.000000e+00</Option>
+    <Option name="SamplingTraining" modified="No">True</Option>
+    <Option name="SamplingTesting" modified="No">False</Option>
+    <Option name="ResetStep" modified="No">50</Option>
+    <Option name="Tau" modified="No">3.000000e+00</Option>
+    <Option name="BPMode" modified="No">sequential</Option>
+    <Option name="BatchSize" modified="No">-1</Option>
+    <Option name="ConvergenceImprove" modified="No">1.000000e-30</Option>
+    <Option name="ConvergenceTests" modified="No">-1</Option>
+    <Option name="UseRegulator" modified="Yes">False</Option>
+    <Option name="UpdateLimit" modified="No">10000</Option>
+    <Option name="CalculateErrors" modified="No">False</Option>
+    <Option name="WeightRange" modified="No">1.000000e+00</Option>
+  </Options>
+  <Variables NVar="10">
+    <Variable VarIndex="0" Expression="tmva_n_btags" Label="tmva_n_btags" Title="N of b-tags" Unit="" Internal="tmva_n_btags" Type="I" Min="1.00000000e+00" Max="5.00000000e+00"/>
+    <Variable VarIndex="1" Expression="tmva_deltaphi_bottomlepton" Label="tmva_deltaphi_bottomlepton" Title="#Delta#phi(l,b)" Unit="rad" Internal="tmva_deltaphi_bottomlepton" Type="F" Min="2.53319740e-06" Max="3.14159179e+00"/>
+    <Variable VarIndex="2" Expression="tmva_deltaphi_bottomtoptag" Label="tmva_deltaphi_bottomtoptag" Title="#Delta#phi(t,b)" Unit="rad" Internal="tmva_deltaphi_bottomtoptag" Type="F" Min="7.15255737e-07" Max="3.14159203e+00"/>
+    <Variable VarIndex="3" Expression="tmva_pseudotop_mass" Label="tmva_pseudotop_mass" Title="l#nub mass" Unit="GeV" Internal="tmva_pseudotop_mass" Type="F" Min="8.65726852e+01" Max="6.19593115e+03"/>
+    <Variable VarIndex="4" Expression="tmva_ptbalance" Label="tmva_ptbalance" Title="pT balance" Unit="" Internal="tmva_ptbalance" Type="F" Min="-9.99546409e-01" Max="4.02910995e+00"/>
+    <Variable VarIndex="5" Expression="tmva_wass_pt" Label="tmva_wass_pt" Title="asso. W pT" Unit="GeV" Internal="tmva_wass_pt" Type="F" Min="1.30596608e-01" Max="2.27422290e+03"/>
+    <Variable VarIndex="6" Expression="tmva_lepton_pt" Label="tmva_lepton_pt" Title="lepton pT" Unit="GeV" Internal="tmva_lepton_pt" Type="F" Min="5.00000725e+01" Max="1.38541663e+03"/>
+    <Variable VarIndex="7" Expression="tmva_lepton_eta" Label="tmva_lepton_eta" Title="lepton #eta" Unit="" Internal="tmva_lepton_eta" Type="F" Min="-2.39992762e+00" Max="2.39996552e+00"/>
+    <Variable VarIndex="8" Expression="tmva_deltaphi_leptonnextjet" Label="tmva_deltaphi_leptonnextjet" Title="#Delta#phi(l,jet)" Unit="rad" Internal="tmva_deltaphi_leptonnextjet" Type="F" Min="1.90734863e-06" Max="3.14156532e+00"/>
+    <Variable VarIndex="9" Expression="tmva_met_pt" Label="tmva_met_pt" Title="missing ET" Unit="GeV" Internal="tmva_met_pt" Type="F" Min="5.00000381e+01" Max="1.85942871e+03"/>
+  </Variables>
+  <Spectators NSpec="0"/>
+  <Classes NClass="2">
+    <Class Name="Signal" Index="0"/>
+    <Class Name="Background" Index="1"/>
+  </Classes>
+  <Transformations NTransformations="1">
+    <Transform Name="Normalize">
+      <Selection>
+        <Input NInputs="10">
+          <Input Type="Variable" Label="tmva_n_btags" Expression="tmva_n_btags"/>
+          <Input Type="Variable" Label="tmva_deltaphi_bottomlepton" Expression="tmva_deltaphi_bottomlepton"/>
+          <Input Type="Variable" Label="tmva_deltaphi_bottomtoptag" Expression="tmva_deltaphi_bottomtoptag"/>
+          <Input Type="Variable" Label="tmva_pseudotop_mass" Expression="tmva_pseudotop_mass"/>
+          <Input Type="Variable" Label="tmva_ptbalance" Expression="tmva_ptbalance"/>
+          <Input Type="Variable" Label="tmva_wass_pt" Expression="tmva_wass_pt"/>
+          <Input Type="Variable" Label="tmva_lepton_pt" Expression="tmva_lepton_pt"/>
+          <Input Type="Variable" Label="tmva_lepton_eta" Expression="tmva_lepton_eta"/>
+          <Input Type="Variable" Label="tmva_deltaphi_leptonnextjet" Expression="tmva_deltaphi_leptonnextjet"/>
+          <Input Type="Variable" Label="tmva_met_pt" Expression="tmva_met_pt"/>
+        </Input>
+        <Output NOutputs="10">
+          <Output Type="Variable" Label="tmva_n_btags" Expression="tmva_n_btags"/>
+          <Output Type="Variable" Label="tmva_deltaphi_bottomlepton" Expression="tmva_deltaphi_bottomlepton"/>
+          <Output Type="Variable" Label="tmva_deltaphi_bottomtoptag" Expression="tmva_deltaphi_bottomtoptag"/>
+          <Output Type="Variable" Label="tmva_pseudotop_mass" Expression="tmva_pseudotop_mass"/>
+          <Output Type="Variable" Label="tmva_ptbalance" Expression="tmva_ptbalance"/>
+          <Output Type="Variable" Label="tmva_wass_pt" Expression="tmva_wass_pt"/>
+          <Output Type="Variable" Label="tmva_lepton_pt" Expression="tmva_lepton_pt"/>
+          <Output Type="Variable" Label="tmva_lepton_eta" Expression="tmva_lepton_eta"/>
+          <Output Type="Variable" Label="tmva_deltaphi_leptonnextjet" Expression="tmva_deltaphi_leptonnextjet"/>
+          <Output Type="Variable" Label="tmva_met_pt" Expression="tmva_met_pt"/>
+        </Output>
+      </Selection>
+      <Class ClassIndex="0">
+        <Ranges>
+          <Range Index="0" Min="1.0000000000000000e+00" Max="5.0000000000000000e+00"/>
+          <Range Index="1" Min="3.2901763916015625e-05" Max="3.1415843963623047e+00"/>
+          <Range Index="2" Min="8.7956432253122330e-06" Max="3.1415803432464600e+00"/>
+          <Range Index="3" Min="8.8441711425781250e+01" Max="3.7920854492187500e+03"/>
+          <Range Index="4" Min="-9.9783092737197876e-01" Max="4.0291099548339844e+00"/>
+          <Range Index="5" Min="5.7050353288650513e-01" Max="2.2742229003906250e+03"/>
+          <Range Index="6" Min="5.0001914978027344e+01" Max="1.3781282958984375e+03"/>
+          <Range Index="7" Min="-2.3995440006256104e+00" Max="2.3997960090637207e+00"/>
+          <Range Index="8" Min="6.4373016357421875e-06" Max="3.1413993835449219e+00"/>
+          <Range Index="9" Min="5.0000885009765625e+01" Max="1.8594287109375000e+03"/>
+        </Ranges>
+      </Class>
+      <Class ClassIndex="1">
+        <Ranges>
+          <Range Index="0" Min="1.0000000000000000e+00" Max="5.0000000000000000e+00"/>
+          <Range Index="1" Min="2.5331974029541016e-06" Max="3.1415917873382568e+00"/>
+          <Range Index="2" Min="7.1525573730468750e-07" Max="3.1415920257568359e+00"/>
+          <Range Index="3" Min="8.6572685241699219e+01" Max="6.1959311523437500e+03"/>
+          <Range Index="4" Min="-9.9954640865325928e-01" Max="3.5179338455200195e+00"/>
+          <Range Index="5" Min="1.3059660792350769e-01" Max="1.8704453125000000e+03"/>
+          <Range Index="6" Min="5.0000072479248047e+01" Max="1.3854166259765625e+03"/>
+          <Range Index="7" Min="-2.3999276161193848e+00" Max="2.3999655246734619e+00"/>
+          <Range Index="8" Min="1.9073486328125000e-06" Max="3.1415653228759766e+00"/>
+          <Range Index="9" Min="5.0000038146972656e+01" Max="1.2530718994140625e+03"/>
+        </Ranges>
+      </Class>
+      <Class ClassIndex="2">
+        <Ranges>
+          <Range Index="0" Min="1.0000000000000000e+00" Max="5.0000000000000000e+00"/>
+          <Range Index="1" Min="2.5331974029541016e-06" Max="3.1415917873382568e+00"/>
+          <Range Index="2" Min="7.1525573730468750e-07" Max="3.1415920257568359e+00"/>
+          <Range Index="3" Min="8.6572685241699219e+01" Max="6.1959311523437500e+03"/>
+          <Range Index="4" Min="-9.9954640865325928e-01" Max="4.0291099548339844e+00"/>
+          <Range Index="5" Min="1.3059660792350769e-01" Max="2.2742229003906250e+03"/>
+          <Range Index="6" Min="5.0000072479248047e+01" Max="1.3854166259765625e+03"/>
+          <Range Index="7" Min="-2.3999276161193848e+00" Max="2.3999655246734619e+00"/>
+          <Range Index="8" Min="1.9073486328125000e-06" Max="3.1415653228759766e+00"/>
+          <Range Index="9" Min="5.0000038146972656e+01" Max="1.8594287109375000e+03"/>
+        </Ranges>
+      </Class>
+    </Transform>
+  </Transformations>
+  <MVAPdfs/>
+  <Weights>
+    <Layout NLayers="3">
+      <Layer Index="0" NNeurons="11">
+        <Neuron NSynapses="15">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="15">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="15">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="15">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="15">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="15">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="15">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="15">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="15">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="15">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="15">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+      </Layer>
+      <Layer Index="1" NNeurons="16">
+        <Neuron NSynapses="1">
+          -nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          -nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          -nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          -nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          -nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          -nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          -nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          -nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          -nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          -nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          -nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          -nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          -nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          -nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          -nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          -nan 
+        </Neuron>
+      </Layer>
+      <Layer Index="2" NNeurons="1">
+        <Neuron NSynapses="0"/>
+      </Layer>
+    </Layout>
+  </Weights>
+</MethodSetup>

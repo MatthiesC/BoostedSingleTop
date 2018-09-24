@@ -59,11 +59,11 @@ namespace uhh2 {
     // Scale factors & Uncertainties
     std::unique_ptr<AnalysisModule> sf_muon_id, sf_muon_iso, sf_muon_trigger, sf_muon_trk;
     std::unique_ptr<AnalysisModule> sf_ele_id, sf_ele_rec;
-    std::unique_ptr<AnalysisModule> sf_btag_tight;
+    std::unique_ptr<AnalysisModule> sf_btag_medium;
 
     std::string sys_muon_id, sys_muon_iso, sys_muon_trigger, sys_muon_trk;
     std::string sys_ele_id, sys_ele_rec;
-    std::string sys_btag_tight;
+    std::string sys_btag_medium;
 
     std::unique_ptr<AnalysisModule> sf_top_pt_reweight;
     bool do_top_pt_reweight;
@@ -76,7 +76,7 @@ namespace uhh2 {
     bool do_scale_variation;
     string sys_pu;
 
-    std::unique_ptr<Selection> sel_nbjetcut_loose, sel_nbjetcut_tight, sel_toptags_1, sel_toptags_0; //sel_2bjetcut_tight, sel_1bjetcut_tight;
+    std::unique_ptr<Selection> sel_nbjetcut_loose, sel_nbjetcut_medium, sel_1bjetcut_medium, sel_2bjetcut_medium, sel_toptags_1, sel_toptags_0; //sel_2bjetcut_tight, sel_1bjetcut_tight;
 
     bool is_ele, is_muo;
 
@@ -87,9 +87,9 @@ namespace uhh2 {
   
 
     // --- Selections and Histogramms --- //
-    std::unique_ptr<AndHists> hist_presel, hist_nbjetcut_loose, hist_nbjetcut_tight; //hist_2bjetcut_tight, hist_1bjetcut_tight; 
+    std::unique_ptr<AndHists> hist_presel, hist_nbjetcut_loose, hist_nbjetcut_medium; //hist_2bjetcut_tight, hist_1bjetcut_tight; 
     std::unique_ptr<MatchHists> hist_match_tw, hist_match_tt;
-    std::unique_ptr<MVAHists> hist_mva_0t, hist_mva_1t;
+    std::unique_ptr<MVAHists> hist_mva_0t1b, hist_mva_0t2b, hist_mva_1t, hist_mva_1t1b, hist_mva_1t2b;
     std::unique_ptr<Hists> hist_BTagMCEfficiency;
 
     // --- Declare new Output for TMVA --- //
@@ -110,8 +110,9 @@ namespace uhh2 {
 
     bool do_mva;
     //MVADiscriminator *discr_ele_, *discr_muo_;
-    MVADiscriminator *discr_BDT_;
-    Event::Handle<double> h_mvadiscr;
+    MVADiscriminator *discr_BDT_, *discr_BDT_2b;
+    MVADiscriminator_1b *discr_BDT_1b;
+    Event::Handle<double> h_mvadiscr, h_mvadiscr_1b, h_mvadiscr_2b;
 
   };
 
@@ -135,7 +136,7 @@ namespace uhh2 {
     sys_ele_id       = ctx.get("Systematic_EleID");
     sys_ele_rec      = ctx.get("Systematic_EleRec");
  
-    sys_btag_tight   = ctx.get("Systematic_BTag");
+    sys_btag_medium  = ctx.get("Systematic_BTag");
     sys_toptag       = ctx.get("Systematic_TopTag");
     sys_L1           = ctx.get("Systematic_L1");
     sys_pu           = ctx.get("Systematic_PU");
@@ -186,6 +187,8 @@ namespace uhh2 {
 
     CSVBTag::wp btag_wp_loose = CSVBTag::WP_LOOSE;
     JetId id_btag_loose = CSVBTag(btag_wp_loose);
+    CSVBTag::wp btag_wp_medium = CSVBTag::WP_MEDIUM;
+    JetId id_btag_medium = CSVBTag(btag_wp_medium);
     CSVBTag::wp btag_wp_tight = CSVBTag::WP_TIGHT;
     JetId id_btag_tight = CSVBTag(btag_wp_tight);
 
@@ -219,7 +222,7 @@ namespace uhh2 {
 
     sf_top_pt_reweight.reset(new TopPtReweight(ctx, 0.0615, -0.0005, "", "", do_top_pt_reweight, 1.0)); // https://twiki.cern.ch/twiki/bin/view/CMS/TopPtReweighting
    
-    sf_btag_tight.reset(new MCBTagScaleFactor(ctx, btag_wp_tight, "jets", sys_btag_tight, "mujets", "incl", "MCBtagEfficienciesTight"));
+    sf_btag_medium.reset(new MCBTagScaleFactor(ctx, btag_wp_medium, "jets", sys_btag_medium, "mujets", "incl", "MCBtagEfficienciesMedium"));
 
 
     scale_variation.reset(new MCScaleVariation(ctx));
@@ -229,11 +232,11 @@ namespace uhh2 {
     hist_presel.reset(new AndHists(ctx, "PreSel"));
     hist_presel->add_hist(new HOTVRHists(ctx, "PreSel_HOTVRtagged", id_toptag));
 
-    hist_BTagMCEfficiency.reset(new BTagMCEfficiencyHists(ctx, "BTagMCEfficiency", btag_wp_tight));
+    hist_BTagMCEfficiency.reset(new BTagMCEfficiencyHists(ctx, "BTagMCEfficiency", btag_wp_medium)); // btag_wp_tight, btag_wp_medium
 
-    sel_nbjetcut_tight.reset(new NJetSelection(1, -1, id_btag_tight));
-    hist_nbjetcut_tight.reset(new AndHists(ctx, "NBJetCutTight"));
-    hist_nbjetcut_tight->add_hist(new HOTVRHists(ctx, "NBJetCutTight_HOTVRtagged", id_toptag));
+    sel_nbjetcut_medium.reset(new NJetSelection(1, -1, id_btag_medium)); // id_btag_tight
+    hist_nbjetcut_medium.reset(new AndHists(ctx, "NBJetCutMedium"));
+    hist_nbjetcut_medium->add_hist(new HOTVRHists(ctx, "NBJetCutMedium_HOTVRtagged", id_toptag));
 
     hist_match_tw.reset(new MatchHists(ctx, "Matching_tW", id_toptag));
     hist_match_tt.reset(new MatchHists(ctx, "Matching_tt", id_toptag));
@@ -259,12 +262,25 @@ namespace uhh2 {
     //if(do_mva && is_ele)      discr_ele_ = new MVADiscriminator("");
     //else if(do_mva && is_muo) discr_muo_ = new MVADiscriminator("/nfs/dust/cms/user/matthies/BoostedSingleTop/RunII_80X_v5/Analysis/tmva/"); // needs to be updated once the weight file is produced
 
-    if(do_mva) discr_BDT_ = new MVADiscriminator("/nfs/dust/cms/user/matthies/Analysis_80x_v5/CMSSW_8_0_24_patch1/src/UHH2/BoostedSingleTop/tmva_comb/weights/TMVAClassification_BDT.weights.xml");
+    if(do_mva) {
+      discr_BDT_ =   new MVADiscriminator("/nfs/dust/cms/user/matthies/Analysis_80x_v5/CMSSW_8_0_24_patch1/src/UHH2/BoostedSingleTop/tmva_comb/weights_nbtags/TMVAClassification_BDT.weights.xml");
+      discr_BDT_1b = new MVADiscriminator_1b("/nfs/dust/cms/user/matthies/Analysis_80x_v5/CMSSW_8_0_24_patch1/src/UHH2/BoostedSingleTop/tmva_comb/weights_1btag/TMVAClassification_BDT_100_25_01_10.weights.xml");
+      discr_BDT_2b = new MVADiscriminator("/nfs/dust/cms/user/matthies/Analysis_80x_v5/CMSSW_8_0_24_patch1/src/UHH2/BoostedSingleTop/tmva_comb/weights_2btags/TMVAClassification_BDT_50_25_03_10.weights.xml");
+      h_mvadiscr    = ctx.declare_event_output<double>("mvadiscr");
+      h_mvadiscr_1b = ctx.declare_event_output<double>("mvadiscr_1b");
+      h_mvadiscr_2b = ctx.declare_event_output<double>("mvadiscr_2b");
+    }
 
-    if(do_mva) h_mvadiscr = ctx.declare_event_output<double>("mvadiscr");
+    hist_mva_0t1b.reset(new MVAHists(ctx, "MVA_0t1b"));
+    hist_mva_0t2b.reset(new MVAHists(ctx, "MVA_0t2b"));
 
-    hist_mva_0t.reset(new MVAHists(ctx, "MVA_0t"));
     hist_mva_1t.reset(new MVAHists(ctx, "MVA_1t"));
+
+    sel_1bjetcut_medium.reset(new NJetSelection(1, 1, id_btag_medium));
+    sel_2bjetcut_medium.reset(new NJetSelection(2, -1, id_btag_medium));
+
+    hist_mva_1t1b.reset(new MVAHists(ctx, "MVA_1t1b"));
+    hist_mva_1t2b.reset(new MVAHists(ctx, "MVA_1t2b"));
 
   }
 
@@ -306,16 +322,16 @@ namespace uhh2 {
 
     hist_BTagMCEfficiency->fill(event);
 
-    if(!sel_nbjetcut_tight->passes(event)) return false;
-    sf_btag_tight->process(event);
-    hist_nbjetcut_tight->fill(event);
+    if(!sel_nbjetcut_medium->passes(event)) return false;
+    sf_btag_medium->process(event);
+    hist_nbjetcut_medium->fill(event);
 
 
      //=====================================================//
     // Reconstruction: Matching between MC-Gen and MC-Reco //
    //=====================================================//
 
-    if(dataset_name.find("SingleTop_T_tWch") == 0 || dataset_name.find("SingleTop_Tbar_tWch") == 0)
+    /*if(dataset_name.find("SingleTop_T_tWch") == 0 || dataset_name.find("SingleTop_Tbar_tWch") == 0)
       {
 	SingleTopGen_tWchProd->process(event);
 	hist_match_tw->fill(event);
@@ -325,7 +341,7 @@ namespace uhh2 {
 	TTbarGenProd->process(event);
 	hist_match_tt->fill(event);
       }
-
+    */
 
      //=================================================//
     // Cuts on events regarding the number of top-tags //
@@ -361,13 +377,13 @@ namespace uhh2 {
     nextjet = *nextJet(lepton, *event.jets);
 
     //b-tags
-    const CSVBTag btag_tight(CSVBTag::WP_TIGHT);
-    int n_btags_tight  = 0;
+    const CSVBTag btag_medium(CSVBTag::WP_MEDIUM); // WP_TIGHT
+    int n_btags_medium = 0;
     for(Jet jet : jets)
       {
-	if(btag_tight(jet, event))
+	if(btag_medium(jet, event))
 	  {
-	    ++n_btags_tight;
+	    ++n_btags_medium;
 	    bjets.push_back(jet);
 	  }
       }
@@ -405,7 +421,7 @@ namespace uhh2 {
       }
 
     event.set(h_tmva_weight, event.weight);
-    event.set(h_tmva_n_btags, n_btags_tight);
+    event.set(h_tmva_n_btags, n_btags_medium);
     event.set(h_tmva_pseudotop_mass, M_LepNuB.at(0));
     event.set(h_tmva_deltaphi_bottomlepton, deltaPhi(lepton.v4(), bjet0.v4()));
     event.set(h_tmva_deltaphi_bottomtoptag, deltaPhi(topjet, bjet0.v4()));
@@ -422,25 +438,60 @@ namespace uhh2 {
     event.set(h_tmva_ht_jets, ht_jets);
     event.set(h_tmva_met_pt, met_pt);
 
-    std::vector<double> mva_inputvars {n_btags_tight, deltaPhi(lepton.v4(), bjet0.v4()), deltaPhi(topjet, bjet0.v4()), M_LepNuB.at(0), pt_balance, Pt_Wass.at(0), lepton.v4().pt(), lepton.v4().eta(), deltaPhi(lepton, nextjet), met_pt};
+    std::vector<double> mva_inputvars {n_btags_medium, deltaPhi(lepton.v4(), bjet0.v4()), deltaPhi(topjet, bjet0.v4()), M_LepNuB.at(0), pt_balance, Pt_Wass.at(0), lepton.v4().pt(), lepton.v4().eta(), deltaPhi(lepton, nextjet), met_pt};
 
      //==================//
     // TMVA Application //
    //==================//
 
     double mvaD = -100;
-    if(do_mva) mvaD = discr_BDT_->eval(float(n_btags_tight), float(deltaPhi(lepton.v4(), bjet0.v4())), float(deltaPhi(topjet, bjet0.v4())), float(M_LepNuB.at(0)), float(pt_balance), float(Pt_Wass.at(0)), float(lepton.v4().pt()), float(lepton.v4().eta()), float(deltaPhi(lepton, nextjet)));//, float(met_pt));
-
-    if(do_mva) event.set(h_mvadiscr, mvaD);
-
-    if(sel_toptags_0->passes(event)) {
-      hist_mva_0t->fill_(event, mvaD, mva_inputvars);
-      return false;
+    double mvaD_1b = -100;
+    double mvaD_2b = -100;
+    if(do_mva) {
+      mvaD = discr_BDT_->eval(float(n_btags_medium), float(deltaPhi(lepton.v4(), bjet0.v4())), float(deltaPhi(topjet, bjet0.v4())), float(M_LepNuB.at(0)), float(pt_balance), float(Pt_Wass.at(0)), float(lepton.v4().pt()), float(lepton.v4().eta()), float(deltaPhi(lepton, nextjet)));//, float(met_pt));
+      event.set(h_mvadiscr, mvaD);
+      mvaD_1b = discr_BDT_1b->eval(float(deltaPhi(lepton.v4(), bjet0.v4())), float(deltaPhi(topjet, bjet0.v4())), float(M_LepNuB.at(0)), float(pt_balance), float(Pt_Wass.at(0)), float(lepton.v4().pt()), float(lepton.v4().eta()), float(deltaPhi(lepton, nextjet)));
+      event.set(h_mvadiscr_1b, mvaD_1b);
+      mvaD_2b = discr_BDT_2b->eval(float(n_btags_medium), float(deltaPhi(lepton.v4(), bjet0.v4())), float(deltaPhi(topjet, bjet0.v4())), float(M_LepNuB.at(0)), float(pt_balance), float(Pt_Wass.at(0)), float(lepton.v4().pt()), float(lepton.v4().eta()), float(deltaPhi(lepton, nextjet)));
+      event.set(h_mvadiscr_2b, mvaD_2b);
     }
-    else if(sel_toptags_1->passes(event)) {
-      hist_mva_1t->fill_(event, mvaD, mva_inputvars);
-      //return false;
+
+    // Get migration plots
+    if(sel_toptags_1->passes(event) && (sel_1bjetcut_medium->passes(event) || sel_2bjetcut_medium->passes(event))) {
+      if(dataset_name.find("SingleTop_T_tWch") == 0 || dataset_name.find("SingleTop_Tbar_tWch") == 0)
+	{
+	  SingleTopGen_tWchProd->process(event);
+	  hist_match_tw->fill(event);
+	}
+      else if(dataset_name.find("TTbar") == 0) // find "xyz" at position 0 of name
+	{
+	  TTbarGenProd->process(event);
+	  hist_match_tt->fill(event);
+	}
     }
+
+    // Get MVA plots
+    if(sel_1bjetcut_medium->passes(event)) {
+      if(sel_toptags_0->passes(event)) {
+	hist_mva_0t1b->fill_(event, mvaD_1b, mva_inputvars, 0.3);
+	return false;
+      } else if(sel_toptags_1->passes(event)) {
+	hist_mva_1t1b->fill_(event, mvaD_1b, mva_inputvars, 0.3);
+	//return false;
+      }
+    }
+    else if(sel_2bjetcut_medium->passes(event)) {
+      if(sel_toptags_0->passes(event)) {
+	hist_mva_0t2b->fill_(event, mvaD_1b, mva_inputvars, 0.6);
+	return false;
+      } else if(sel_toptags_1->passes(event)) {
+	hist_mva_1t2b->fill_(event, mvaD_1b, mva_inputvars, 0.6);
+	return false;
+      }
+    }
+
+
+
 
      //======//
     // Done //

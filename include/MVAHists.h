@@ -16,7 +16,7 @@ namespace uhh2 {
     MVAHists(uhh2::Context & ctx, const std::string & dirname);
 
     virtual void fill(const uhh2::Event & e) override;
-    void fill_(const uhh2::Event & e, const double & mvaD, const std::vector<double> & mva_inputvars);
+    void fill_(const uhh2::Event & e, const double & mvaD, const std::vector<double> & mva_inputvars, const double & BDTcut);
     virtual ~MVAHists();
 
   protected:
@@ -72,6 +72,7 @@ namespace uhh2 {
 
 
     TH1F* H_200to300_BDT;
+    TH1F* H_200to300_BDT_20bins;
     TH1F* H_200to300_BDT_rebin;
     TH1F* H_200to300_BDT_rebin01;
     TH1F* H_200to300_top_eta;
@@ -89,6 +90,7 @@ namespace uhh2 {
 
 
     TH1F* H_300to400_BDT;
+    TH1F* H_300to400_BDT_20bins;
     TH1F* H_300to400_BDT_rebin;
     TH1F* H_300to400_BDT_rebin01;
     TH1F* H_300to400_top_eta;
@@ -106,6 +108,7 @@ namespace uhh2 {
 
 
     TH1F* H_400to600_BDT;
+    TH1F* H_400to600_BDT_20bins;
     TH1F* H_400to600_BDT_rebin;
     TH1F* H_400to600_BDT_rebin01;
     TH1F* H_400to600_top_eta;
@@ -123,6 +126,7 @@ namespace uhh2 {
 
 
     TH1F* H_600to1200_BDT;
+    TH1F* H_600to1200_BDT_20bins;
     TH1F* H_600to1200_BDT_rebin;
     TH1F* H_600to1200_BDT_rebin01;
     TH1F* H_600to1200_top_eta;

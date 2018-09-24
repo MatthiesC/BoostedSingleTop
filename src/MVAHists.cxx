@@ -46,7 +46,7 @@ MVAHists::MVAHists(Context & ctx, const string & dirname):
   H_nocuts_top_pt_vs_eta_1000 = book<TH2F>("nocuts_top_pt_vs_eta_1000", "top-jet p_{T} [GeV] vs. #eta", 1000, -2.5, 2.5, 1000, 200, 1200);
   H_nocuts_top_pt_vs_eta_rebin = book<TH2F>("nocuts_top_pt_vs_eta_rebin", "top-jet p_{T} [GeV] vs. #eta", rebin_eta_bincount, rebin_eta, rebin_pt_bincount, rebin_pt);
 
-  H_nocuts_tmva_n_btags = book<TH1F>("nocuts_tmva_n_btags", "number of tight CSV b-tags", 6, 0.5, 6.5);
+  H_nocuts_tmva_n_btags = book<TH1F>("nocuts_tmva_n_btags", "number of medium CSV b-tags", 6, 0.5, 6.5);
   H_nocuts_tmva_deltaPhi_leptonbottom = book<TH1F>("nocuts_tmva_deltaPhi_leptonbottom", "#Delta#phi(l,b) [rad]", 40, 0, M_PI);
   H_nocuts_tmva_deltaPhi_topbottom = book<TH1F>("nocuts_tmva_deltaPhi_topbottom", "#Delta#phi(t,b) [rad]", 40, 0, M_PI);
   H_nocuts_tmva_mass_LepNuB = book<TH1F>("nocuts_tmva_mass_LepNuB", "l#nub invariant mass [GeV]", 40, 0, 1000);
@@ -57,31 +57,32 @@ MVAHists::MVAHists(Context & ctx, const string & dirname):
   H_nocuts_tmva_deltaPhi_leptonnextjet = book<TH1F>("nocuts_tmva_deltaPhi_leptonnextjet", "#Delta#phi(l,jet) [rad]", 40, 0, M_PI);
   H_nocuts_tmva_met_pt = book<TH1F>("nocuts_tmva_met_pt", "missing E_{T} [GeV]", 48, 0, 600);
 
-  H_BDTcut_top_pt_1000 = book<TH1F>("BDTcut_top_pt_1000", "top-jet p_{T} [GeV] (BDT > 0.2)", 1000, 200, 1200);
-  H_BDTcut_top_pt_rebin = book<TH1F>("BDTcut_top_pt_rebin", "top-jet p_{T} [GeV] (BDT > 0.2)", rebin_pt_bincount, rebin_pt);
-  H_BDTcut_top_eta_1000 = book<TH1F>("BDTcut_top_eta_1000", "top-jet #eta (BDT > 0.2)", 1000, -2.5, 2.5);
-  H_BDTcut_top_eta_rebin = book<TH1F>("BDTcut_top_eta_rebin", "top-jet #eta (BDT > 0.2)", rebin_eta_bincount, rebin_eta);
-  H_BDTcut_top_pt_vs_eta_1000 = book<TH2F>("BDTcut_top_pt_vs_eta_1000", "top-jet p_{T} [GeV] vs. #eta (BDT > 0.2)", 1000, -2.5, 2.5, 1000, 200, 1200);
-  H_BDTcut_top_pt_vs_eta_rebin = book<TH2F>("BDTcut_top_pt_vs_eta_rebin", "top-jet p_{T} [GeV] vs. #eta (BDT > 0.2)", rebin_eta_bincount, rebin_eta, rebin_pt_bincount, rebin_pt);
+  H_BDTcut_top_pt_1000 = book<TH1F>("BDTcut_top_pt_1000", "top-jet p_{T} [GeV]", 1000, 200, 1200);
+  H_BDTcut_top_pt_rebin = book<TH1F>("BDTcut_top_pt_rebin", "top-jet p_{T} [GeV]", rebin_pt_bincount, rebin_pt);
+  H_BDTcut_top_eta_1000 = book<TH1F>("BDTcut_top_eta_1000", "top-jet #eta", 1000, -2.5, 2.5);
+  H_BDTcut_top_eta_rebin = book<TH1F>("BDTcut_top_eta_rebin", "top-jet #eta", rebin_eta_bincount, rebin_eta);
+  H_BDTcut_top_pt_vs_eta_1000 = book<TH2F>("BDTcut_top_pt_vs_eta_1000", "top-jet p_{T} [GeV] vs. #eta", 1000, -2.5, 2.5, 1000, 200, 1200);
+  H_BDTcut_top_pt_vs_eta_rebin = book<TH2F>("BDTcut_top_pt_vs_eta_rebin", "top-jet p_{T} [GeV] vs. #eta", rebin_eta_bincount, rebin_eta, rebin_pt_bincount, rebin_pt);
 
-  H_BDTcut_tmva_n_btags = book<TH1F>("BDTcut_tmva_n_btags", "number of tight CSV b-tags (BDT > 0.2)", 6, 0.5, 6.5);
-  H_BDTcut_tmva_deltaPhi_leptonbottom = book<TH1F>("BDTcut_tmva_deltaPhi_leptonbottom", "#Delta#phi(l,b) [rad] (BDT > 0.2)", 40, 0, M_PI);
-  H_BDTcut_tmva_deltaPhi_topbottom = book<TH1F>("BDTcut_tmva_deltaPhi_topbottom", "#Delta#phi(t,b) [rad] (BDT > 0.2)", 40, 0, M_PI);
-  H_BDTcut_tmva_mass_LepNuB = book<TH1F>("BDTcut_tmva_mass_LepNuB", "l#nub invariant mass [GeV] (BDT > 0.2)", 40, 0, 1000);
-  H_BDTcut_tmva_pt_balance = book<TH1F>("BDTcut_tmva_pt_balance", "p_{T} balance (BDT > 0.2)", 40, -2, 2);
-  H_BDTcut_tmva_Wass_pt = book<TH1F>("BDTcut_tmva_Wass_pt", "associated W p_{T} [GeV] (BDT > 0.2)", 40, 0, 1000);
-  H_BDTcut_tmva_lepton_pt = book<TH1F>("BDTcut_tmva_lepton_pt", "lepton p_{T} [GeV] (BDT > 0.2)", 48, 0, 600);
-  H_BDTcut_tmva_lepton_eta = book<TH1F>("BDTcut_tmva_lepton_eta", "lepton #eta (BDT > 0.2)", 25, -2.5, 2.5);
-  H_BDTcut_tmva_deltaPhi_leptonnextjet = book<TH1F>("BDTcut_tmva_deltaPhi_leptonnextjet", "#Delta#phi(l,jet) [rad] (BDT > 0.2)", 40, 0, M_PI);
-  H_BDTcut_tmva_met_pt = book<TH1F>("BDTcut_tmva_met_pt", "missing E_{T} [GeV] (BDT > 0.2)", 48, 0, 600);
+  H_BDTcut_tmva_n_btags = book<TH1F>("BDTcut_tmva_n_btags", "number of medium CSV b-tags", 6, 0.5, 6.5);
+  H_BDTcut_tmva_deltaPhi_leptonbottom = book<TH1F>("BDTcut_tmva_deltaPhi_leptonbottom", "#Delta#phi(l,b) [rad]", 40, 0, M_PI);
+  H_BDTcut_tmva_deltaPhi_topbottom = book<TH1F>("BDTcut_tmva_deltaPhi_topbottom", "#Delta#phi(t,b) [rad]", 40, 0, M_PI);
+  H_BDTcut_tmva_mass_LepNuB = book<TH1F>("BDTcut_tmva_mass_LepNuB", "l#nub invariant mass [GeV]", 40, 0, 1000);
+  H_BDTcut_tmva_pt_balance = book<TH1F>("BDTcut_tmva_pt_balance", "p_{T} balance", 40, -2, 2);
+  H_BDTcut_tmva_Wass_pt = book<TH1F>("BDTcut_tmva_Wass_pt", "associated W p_{T} [GeV]", 40, 0, 1000);
+  H_BDTcut_tmva_lepton_pt = book<TH1F>("BDTcut_tmva_lepton_pt", "lepton p_{T} [GeV]", 48, 0, 600);
+  H_BDTcut_tmva_lepton_eta = book<TH1F>("BDTcut_tmva_lepton_eta", "lepton #eta", 25, -2.5, 2.5);
+  H_BDTcut_tmva_deltaPhi_leptonnextjet = book<TH1F>("BDTcut_tmva_deltaPhi_leptonnextjet", "#Delta#phi(l,jet) [rad]", 40, 0, M_PI);
+  H_BDTcut_tmva_met_pt = book<TH1F>("BDTcut_tmva_met_pt", "missing E_{T} [GeV]", 48, 0, 600);
 
   // now go through top_pt bins and write out BDT response for each
   //text_extension = " (top-jet p_{T} #in (200,300] GeV)";
   H_200to300_BDT = book<TH1F>("200to300_mvaD", "BDT response (top-jet p_{T} #in (200,300] GeV)", 40, -1, 1);
+  H_200to300_BDT_20bins = book<TH1F>("200to300_mvaD_20bins", "BDT response (top-jet p_{T} #in (200,300] GeV)", 20, -1, 1);
   H_200to300_BDT_rebin = book<TH1F>("200to300_mvaD_rebin", "BDT response (top-jet p_{T} #in (200,300] GeV)", rebin_mvaD_bincount, rebin_mvaD);
   H_200to300_BDT_rebin01 = book<TH1F>("200to300_mvaD_rebin01", "BDT response (top-jet p_{T} #in (200,300] GeV)", rebin01_mvaD_bincount, rebin01_mvaD);
   H_200to300_top_eta = book<TH1F>("200to300_top_eta", "top-jet #eta (top-jet p_{T} #in (200,300] GeV)", rebin_eta_bincount, rebin_eta);
-  H_200to300_tmva_n_btags = book<TH1F>("200to300_tmva_n_btags", "number of tight CSV b-tags (top-jet p_{T} #in (200,300] GeV)", 6, 0.5, 6.5);
+  H_200to300_tmva_n_btags = book<TH1F>("200to300_tmva_n_btags", "number of medium CSV b-tags (top-jet p_{T} #in (200,300] GeV)", 6, 0.5, 6.5);
   H_200to300_tmva_deltaPhi_leptonbottom = book<TH1F>("200to300_tmva_deltaPhi_leptonbottom", "#Delta#phi(l,b) [rad] (top-jet p_{T} #in (200,300] GeV)", 40, 0, M_PI);
   H_200to300_tmva_deltaPhi_topbottom = book<TH1F>("200to300_tmva_deltaPhi_topbottom", "#Delta#phi(t,b) [rad] (top-jet p_{T} #in (200,300] GeV)", 40, 0, M_PI);
   H_200to300_tmva_mass_LepNuB = book<TH1F>("200to300_tmva_mass_LepNuB", "l#nub invariant mass [GeV] (top-jet p_{T} #in (200,300] GeV)", 40, 0, 1000);
@@ -94,10 +95,11 @@ MVAHists::MVAHists(Context & ctx, const string & dirname):
 
   //text_extension = " (top-jet p_{T} #in (300,400] GeV)";
   H_300to400_BDT = book<TH1F>("300to400_mvaD", "BDT response (top-jet p_{T} #in (300,400] GeV)", 40, -1, 1);
+  H_300to400_BDT_20bins = book<TH1F>("300to400_mvaD_20bins", "BDT response (top-jet p_{T} #in (300,400] GeV)", 20, -1, 1);
   H_300to400_BDT_rebin = book<TH1F>("300to400_mvaD_rebin", "BDT response (top-jet p_{T} #in (300,400] GeV)", rebin_mvaD_bincount, rebin_mvaD);
   H_300to400_BDT_rebin01 = book<TH1F>("300to400_mvaD_rebin01", "BDT response (top-jet p_{T} #in (300,400] GeV)", rebin01_mvaD_bincount, rebin01_mvaD);
   H_300to400_top_eta = book<TH1F>("300to400_top_eta", "top-jet #eta (top-jet p_{T} #in (300,400] GeV)", rebin_eta_bincount, rebin_eta);
-  H_300to400_tmva_n_btags = book<TH1F>("300to400_tmva_n_btags", "number of tight CSV b-tags (top-jet p_{T} #in (300,400] GeV)", 6, 0.5, 6.5);
+  H_300to400_tmva_n_btags = book<TH1F>("300to400_tmva_n_btags", "number of medium CSV b-tags (top-jet p_{T} #in (300,400] GeV)", 6, 0.5, 6.5);
   H_300to400_tmva_deltaPhi_leptonbottom = book<TH1F>("300to400_tmva_deltaPhi_leptonbottom", "#Delta#phi(l,b) [rad] (top-jet p_{T} #in (300,400] GeV)", 40, 0, M_PI);
   H_300to400_tmva_deltaPhi_topbottom = book<TH1F>("300to400_tmva_deltaPhi_topbottom", "#Delta#phi(t,b) [rad] (top-jet p_{T} #in (300,400] GeV)", 40, 0, M_PI);
   H_300to400_tmva_mass_LepNuB = book<TH1F>("300to400_tmva_mass_LepNuB", "l#nub invariant mass [GeV] (top-jet p_{T} #in (300,400] GeV)", 40, 0, 1000);
@@ -110,10 +112,11 @@ MVAHists::MVAHists(Context & ctx, const string & dirname):
 
   //text_extension = " (top-jet p_{T} #in (400,600] GeV)";
   H_400to600_BDT = book<TH1F>("400to600_mvaD", "BDT response (top-jet p_{T} #in (400,600] GeV)", 40, -1, 1);
+  H_400to600_BDT_20bins = book<TH1F>("400to600_mvaD_20bins", "BDT response (top-jet p_{T} #in (400,600] GeV)", 20, -1, 1);
   H_400to600_BDT_rebin = book<TH1F>("400to600_mvaD_rebin", "BDT response (top-jet p_{T} #in (400,600] GeV)", rebin_mvaD_bincount, rebin_mvaD);
   H_400to600_BDT_rebin01 = book<TH1F>("400to600_mvaD_rebin01", "BDT response (top-jet p_{T} #in (400,600] GeV)", rebin01_mvaD_bincount, rebin01_mvaD);
   H_400to600_top_eta = book<TH1F>("400to600_top_eta", "top-jet #eta (top-jet p_{T} #in (400,600] GeV)", rebin_eta_bincount, rebin_eta);
-  H_400to600_tmva_n_btags = book<TH1F>("400to600_tmva_n_btags", "number of tight CSV b-tags (top-jet p_{T} #in (400,600] GeV)", 6, 0.5, 6.5);
+  H_400to600_tmva_n_btags = book<TH1F>("400to600_tmva_n_btags", "number of medium CSV b-tags (top-jet p_{T} #in (400,600] GeV)", 6, 0.5, 6.5);
   H_400to600_tmva_deltaPhi_leptonbottom = book<TH1F>("400to600_tmva_deltaPhi_leptonbottom", "#Delta#phi(l,b) [rad] (top-jet p_{T} #in (400,600] GeV)", 40, 0, M_PI);
   H_400to600_tmva_deltaPhi_topbottom = book<TH1F>("400to600_tmva_deltaPhi_topbottom", "#Delta#phi(t,b) [rad] (top-jet p_{T} #in (400,600] GeV)", 40, 0, M_PI);
   H_400to600_tmva_mass_LepNuB = book<TH1F>("400to600_tmva_mass_LepNuB", "l#nub invariant mass [GeV] (top-jet p_{T} #in (400,600] GeV)", 40, 0, 1000);
@@ -126,10 +129,11 @@ MVAHists::MVAHists(Context & ctx, const string & dirname):
 
   //text_extension = " (top-jet p_{T} #in (600,1200] GeV)";
   H_600to1200_BDT = book<TH1F>("600to1200_mvaD", "BDT response (top-jet p_{T} #in (600,1200] GeV)", 40, -1, 1);
+  H_600to1200_BDT_20bins = book<TH1F>("600to1200_mvaD_20bins", "BDT response (top-jet p_{T} #in (600,1200] GeV)", 20, -1, 1);
   H_600to1200_BDT_rebin = book<TH1F>("600to1200_mvaD_rebin", "BDT response (top-jet p_{T} #in (600,1200] GeV)", rebin_mvaD_bincount, rebin_mvaD);
   H_600to1200_BDT_rebin01 = book<TH1F>("600to1200_mvaD_rebin01", "BDT response (top-jet p_{T} #in (600,1200] GeV)", rebin01_mvaD_bincount, rebin01_mvaD);
   H_600to1200_top_eta = book<TH1F>("600to1200_top_eta", "top-jet #eta (top-jet p_{T} #in (600,1200] GeV)", rebin_eta_bincount, rebin_eta);
-  H_600to1200_tmva_n_btags = book<TH1F>("600to1200_tmva_n_btags", "number of tight CSV b-tags (top-jet p_{T} #in (600,1200] GeV)", 6, 0.5, 6.5);
+  H_600to1200_tmva_n_btags = book<TH1F>("600to1200_tmva_n_btags", "number of medium CSV b-tags (top-jet p_{T} #in (600,1200] GeV)", 6, 0.5, 6.5);
   H_600to1200_tmva_deltaPhi_leptonbottom = book<TH1F>("600to1200_tmva_deltaPhi_leptonbottom", "#Delta#phi(l,b) [rad] (top-jet p_{T} #in (600,1200] GeV)", 40, 0, M_PI);
   H_600to1200_tmva_deltaPhi_topbottom = book<TH1F>("600to1200_tmva_deltaPhi_topbottom", "#Delta#phi(t,b) [rad] (top-jet p_{T} #in (600,1200] GeV)", 40, 0, M_PI);
   H_600to1200_tmva_mass_LepNuB = book<TH1F>("600to1200_tmva_mass_LepNuB", "l#nub invariant mass [GeV] (top-jet p_{T} #in (600,1200] GeV)", 40, 0, 1000);
@@ -147,7 +151,7 @@ void MVAHists::fill(const Event & e)
   double w = e.weight;
 }
 
-void MVAHists::fill_(const Event & e, const double & mvaD, const vector<double> & mva_inputvars)
+void MVAHists::fill_(const Event & e, const double & mvaD, const vector<double> & mva_inputvars, const double & BDTcut)
 {
   double w = e.weight;
   //TopJet topjet = (*e.topjets).at(0); // that's wrong!
@@ -199,7 +203,7 @@ void MVAHists::fill_(const Event & e, const double & mvaD, const vector<double> 
   H_nocuts_tmva_met_pt->Fill(mva_inputvars.at(9), w);
 
   // now apply a BDT cut ...
-  if(mvaD > 0.2)
+  if(mvaD > BDTcut)
     {
       H_BDTcut_top_pt_1000->Fill(top_pt, w);
       H_BDTcut_top_pt_rebin->Fill(top_pt, w);
@@ -225,6 +229,7 @@ void MVAHists::fill_(const Event & e, const double & mvaD, const vector<double> 
   if(top_pt > 200 && top_pt <= 300)
     {
       H_200to300_BDT->Fill(mvaD, w);
+      H_200to300_BDT_20bins->Fill(mvaD, w);
       H_200to300_BDT_rebin->Fill(mvaD, w);
       H_200to300_BDT_rebin01->Fill(mvaD, w);
       H_200to300_top_eta->Fill(top_eta, w);
@@ -242,6 +247,7 @@ void MVAHists::fill_(const Event & e, const double & mvaD, const vector<double> 
   else if(top_pt > 300 && top_pt <= 400)
     {
       H_300to400_BDT->Fill(mvaD, w);
+      H_300to400_BDT_20bins->Fill(mvaD, w);
       H_300to400_BDT_rebin->Fill(mvaD, w);
       H_300to400_BDT_rebin01->Fill(mvaD, w);
       H_300to400_top_eta->Fill(top_eta, w);
@@ -259,6 +265,7 @@ void MVAHists::fill_(const Event & e, const double & mvaD, const vector<double> 
   else if(top_pt > 400 && top_pt <= 600)
     {
       H_400to600_BDT->Fill(mvaD, w);
+      H_400to600_BDT_20bins->Fill(mvaD, w);
       H_400to600_BDT_rebin->Fill(mvaD, w);
       H_400to600_BDT_rebin01->Fill(mvaD, w);
       H_400to600_top_eta->Fill(top_eta, w);
@@ -276,6 +283,7 @@ void MVAHists::fill_(const Event & e, const double & mvaD, const vector<double> 
   else if(top_pt > 600 && top_pt <= 1200)
     {
       H_600to1200_BDT->Fill(mvaD, w);
+      H_600to1200_BDT_20bins->Fill(mvaD, w);
       H_600to1200_BDT_rebin->Fill(mvaD, w);
       H_600to1200_BDT_rebin01->Fill(mvaD, w);
       H_600to1200_top_eta->Fill(top_eta, w);
