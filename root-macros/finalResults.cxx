@@ -168,7 +168,7 @@ vector<double> recoEfficiency(TString channel, TString n_btags) {
 
 vector<double> getDataPoints(TString channel, TString n_btags) {
 
-  TString input_path_measurement = "/nfs/dust/cms/user/matthies/Analysis_80x_v5/CMSSW_8_0_24_patch1/src/UHH2/BoostedSingleTop/theta-workdir/rootfiles/theta-input_stat.root";
+  TString input_path_measurement = "/nfs/dust/cms/user/matthies/Analysis_80x_v5/CMSSW_8_0_24_patch1/src/UHH2/BoostedSingleTop/theta-workdir/rootfiles/theta-output_stat.root";
   cout << "Make sure to run THETA to get your input histograms!" << endl;
   TFile* input_file_measurement = TFile::Open(input_path_measurement, "READ");
 
@@ -181,7 +181,9 @@ vector<double> getDataPoints(TString channel, TString n_btags) {
 
     hist_measured->Rebin(hist_measured->GetSize()-2);
     result.push_back(hist_measured->GetBinContent(1));
+    cout << hist_measured->GetBinContent(1) << endl;
     result.push_back(hist_measured->GetBinError(1));
+    cout << hist_measured->GetBinError(1) << endl;
   }
 
   return result;
@@ -221,8 +223,8 @@ void makeFinalPlots(TString channel, TString n_btags, vector<double> datapoints)
   hist_data->SetMarkerStyle(8);
 
   double lumi = 1/35867.;
-  hist_gen->Scale(lumi);
-  hist_data->Scale(lumi);
+  //hist_gen->Scale(lumi);
+  //hist_data->Scale(lumi);
 
   //c->SetLogy();
 

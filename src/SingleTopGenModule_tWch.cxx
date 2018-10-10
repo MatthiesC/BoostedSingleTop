@@ -99,7 +99,7 @@ namespace uhh2examples {
     h_singletopgen_twch->fill(event);
     
     // 3. decide whether or not to keep the current event in the output:
-    return true; // keep that on false to not overload the output directory with non-selected MC samples
+    return false; // keep that on false to not overload the output directory with non-selected MC samples
   }
 
   // as we want to run the ExampleCycleNew directly with AnalysisModuleRunner,

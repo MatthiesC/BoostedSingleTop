@@ -119,6 +119,6 @@ void deltarvstoppt() {
   lumi->SetTextSize(24);
   lumi->Draw();
 
-  c->SaveAs("deltarvstoppt.eps");
+  c->SaveAs("plots/deltarvstoppt.eps");
 
 }

@@ -54,6 +54,8 @@ class SingleTopGen_tWchHists: public uhh2::Hists {
   TH1F *EleChannel_nu_pt;
   TH2F *EleChannel_pt_topVSnu;
 
+  TH1F *EleChannel_TopPt_GenCut;
+
   // Muon Channel
 
   TH1F *MuoChannel_lep_pt, *MuoChannel_lep_eta, *MuoChannel_top_pt, *MuoChannel_top_eta;
@@ -63,6 +65,8 @@ class SingleTopGen_tWchHists: public uhh2::Hists {
 
   TH1F *MuoChannel_nu_pt;
   TH2F *MuoChannel_pt_topVSnu;
+
+  TH1F *MuoChannel_TopPt_GenCut;
 
   uhh2::Event::Handle<SingleTopGen_tWch> h_singletopgen_twch;
 };

@@ -90,7 +90,7 @@ void pttopspectrum() {
   legend->Draw();
   legend->SetBorderSize(0);
 
-  if(bNormalized) c->SaveAs("pttopspectrum_norm.eps");
-  else c->SaveAs("pttopspectrum.eps");
+  if(bNormalized) c->SaveAs("plots/pttopspectrum_norm.eps");
+  else c->SaveAs("plots/pttopspectrum.eps");
 
 }

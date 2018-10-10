@@ -114,6 +114,8 @@ SingleTopGen_tWchHists::SingleTopGen_tWchHists(uhh2::Context & ctx, const std::s
   deltaR_gluonAss_top_decays_min_vs_deltaR_top = book<TH2F>( "deltaR_gluonAss_top_decays_min_vs_deltaR_top", "#DeltaR_{min}(gluonAss, top decay prod.) vs #DeltaR_{max}(top decay prod.)",500,0,5,500,0,5);
   deltaR_gluonAss_WAss_decays_min = book<TH1F>( "deltaR_gluonAss_WAss_decays_min", "#DeltaR_{min}(gluonAss, WAss decay prod.)",1000,0,5);  
 
+  double rebinGenCutPt[] = {0,200,300,400,600,1200};
+
   // Electron Channel
 
   EleChannel_lep_pt = book<TH1F>( "EleChannel_lep_pt", "p_{T}^{lep} [GeV] (e-channel)", 2000, 0, 2000 );
@@ -134,6 +136,8 @@ SingleTopGen_tWchHists::SingleTopGen_tWchHists(uhh2::Context & ctx, const std::s
   EleChannel_nu_pt = book<TH1F>( "EleChannel_nu_pt", "p_{T}^{#nu} [GeV] (e-channel)", 2000, 0, 2000 );
   EleChannel_pt_topVSnu = book<TH2F>( "EleChannel_pt_topVSnu", "p_{T}^{top} [GeV] vs. p_{T}^{#nu} [GeV] (e-channel)",2000,0,2000,2000,0,2000);
 
+  EleChannel_TopPt_GenCut = book<TH1F>( "EleChannel_TopPt_GenCut", "p_{T}^{top} [GeV] (e-channel)", 5, rebinGenCutPt);
+
   // Muon Channel
 
   MuoChannel_lep_pt = book<TH1F>( "MuoChannel_lep_pt", "p_{T}^{lep} [GeV] (#mu-channel)", 2000, 0, 2000 );
@@ -153,6 +157,8 @@ SingleTopGen_tWchHists::SingleTopGen_tWchHists(uhh2::Context & ctx, const std::s
 
   MuoChannel_nu_pt = book<TH1F>( "MuoChannel_nu_pt", "p_{T}^{#nu} [GeV] (#mu-channel)", 2000, 0, 2000 );
   MuoChannel_pt_topVSnu = book<TH2F>( "MuoChannel_pt_topVSnu", "p_{T}^{top} [GeV] vs. p_{T}^{#nu} [GeV] (#mu-channel)",2000,0,2000,2000,0,2000);
+
+  MuoChannel_TopPt_GenCut = book<TH1F>( "MuoChannel_TopPt_GenCut", "p_{T}^{top} [GeV] (#mu-channel)", 5, rebinGenCutPt);
 
   h_singletopgen_twch = ctx.get_handle<SingleTopGen_tWch>("singletopgen_twch");
     
@@ -344,6 +350,8 @@ void SingleTopGen_tWchHists::fill(const uhh2::Event & e){
 
     EleChannel_nu_pt->Fill(NuAss.Pt(), e.weight);
     EleChannel_pt_topVSnu->Fill(NuAss.Pt(), top.Pt(), e.weight);
+
+    if(top.Pt() > 200 && abs(top.Eta()) < 2.5) EleChannel_TopPt_GenCut->Fill(top.Pt(), e.weight);
   }
 
   if(singletopgen_twch.IsTopHadronicDecay() && singletopgen_twch.IsAssToMuonDecay()){
@@ -363,6 +371,8 @@ void SingleTopGen_tWchHists::fill(const uhh2::Event & e){
 
     MuoChannel_nu_pt->Fill(NuAss.Pt(), e.weight);
     MuoChannel_pt_topVSnu->Fill(NuAss.Pt(), top.Pt(), e.weight);
+
+    if(top.Pt() > 200 && abs(top.Eta()) < 2.5) MuoChannel_TopPt_GenCut->Fill(top.Pt(), e.weight);
   }
 
 }

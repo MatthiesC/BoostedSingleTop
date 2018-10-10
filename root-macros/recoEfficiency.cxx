@@ -160,7 +160,7 @@ vector<double> makePlots(TString channel, TString n_btags) {
   //==================//
 
   c->cd();
-  c->SaveAs("recoEfficiency_"+channel+"_"+n_btags+".eps");
+  c->SaveAs("plots/recoEfficiency_"+channel+"_"+n_btags+".eps");
 
   return result;
 }
