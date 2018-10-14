@@ -26,6 +26,7 @@ def run(fname_stat, outname_stat, write_report = False):
     rate_unc_QCD   = math.log(2.0)
     rate_unc_w     = math.log(1.1)
     rate_unc_dy    = math.log(1.1)
+    rate_unc_dib   = math.log(1.2)
 
     #model_stat.add_lognormal_uncertainty('luminosity_unc', math.log(1.025), procname='*', obsname='*')
 
@@ -35,7 +36,7 @@ def run(fname_stat, outname_stat, write_report = False):
     #model_stat.add_lognormal_uncertainty('SingleTop_stch_rate', rate_unc_other , procname='SingleTop_stch',obsname='*')
     model_stat.add_lognormal_uncertainty('WJets_rate', rate_unc_w , procname='WJets',obsname='*')
     model_stat.add_lognormal_uncertainty('DYJets_rate', rate_unc_dy , procname='DYJets',obsname='*')
-    #model_stat.add_lognormal_uncertainty('Diboson_rate', rate_unc_other , procname='Diboson',obsname='*')
+    model_stat.add_lognormal_uncertainty('Diboson_rate', rate_unc_dib , procname='Diboson',obsname='*')
     #model_stat.add_lognormal_uncertainty('QCD_rate', rate_unc_QCD , procname='QCD',obsname='*')
     #model_stat.add_lognormal_uncertainty('TTbar_rate', rate_unc_tt , procname='TTbar',obsname='*')
 

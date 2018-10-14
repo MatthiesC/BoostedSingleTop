@@ -32,9 +32,9 @@ void copyAndRenameHists() //(TString channel)
 			      TFile *input_file_ = TFile::Open(input_file, "read");
 			      TH1F *input_histo = (TH1F*)input_file_->Get("MVA_1t"+n_btags+"/"+pt_bin+"_mvaD"); // _mvaD has 40 bins!
 			      if (pt_bin == "200to300") input_histo->Rebin(2); // 20 bins
-			      if (pt_bin == "300to400") input_histo->Rebin(2); // 20 bins
-			      if (pt_bin == "400to600") input_histo->Rebin(2); // 20 bins
-			      if (pt_bin == "600to1200") input_histo->Rebin(4); // 10 bins
+			      if (pt_bin == "300to400") input_histo->Rebin(4); // 20 bins
+			      if (pt_bin == "400to600") input_histo->Rebin(8); // 20 bins
+			      if (pt_bin == "600to1200") input_histo->Rebin(10); // 10 bins
 			      input_histo->SetTitle("BDT response");
 			      TString systSuffix = "";
 			      if(systNames.at(k).EndsWith("_up/"))

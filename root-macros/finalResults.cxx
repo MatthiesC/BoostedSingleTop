@@ -138,13 +138,13 @@ vector<double> recoEfficiency(TString channel, TString n_btags) {
   //hist_eff->GetYaxis()->SetNdivisions(503);
   hist_eff->GetYaxis()->SetLabelSize(0.05/(1-splitter));
   hist_eff->GetXaxis()->SetLabelSize(0.05/(1-splitter));
-  hist_eff->GetXaxis()->SetTitleOffset(1.6);
+  hist_eff->GetXaxis()->SetTitleOffset(1.5);
   hist_eff->GetXaxis()->SetNdivisions(507);
   hist_eff->SetLineStyle(1);
 
   hist_eff->SetLineColor(kBlack);
   hist_eff->GetXaxis()->SetTitle("top-quark or top-jet p_{T} [GeV]");
-  hist_eff->GetYaxis()->SetTitle("Efficiency");
+  hist_eff->GetYaxis()->SetTitle("Correction factor");
   hist_eff->GetYaxis()->CenterTitle();
   hist_eff->GetYaxis()->SetTitleSize(0.05/(1-splitter));
   hist_eff->GetXaxis()->SetTitleSize(0.05/(1-splitter));
@@ -160,37 +160,64 @@ vector<double> recoEfficiency(TString channel, TString n_btags) {
   //==================//
 
   c->cd();
-  c->SaveAs("recoEfficiency_"+channel+"_"+n_btags+".eps");
+  c->SaveAs("plots/recoEfficiency_"+channel+"_"+n_btags+".eps");
 
   return result;
 }
 
 
+// calculates the total uncertainty of a specific bin
+double calcUncertainty(double mean, vector<double> variations) {
+
+  double uncertainty = pow(0.025*mean,2); // lumi unc.
+  for (auto var : variations) {
+    uncertainty += pow(mean-var,2);
+  }
+  uncertainty = sqrt(uncertainty);
+
+  return uncertainty;
+}
+
+
 vector<double> getDataPoints(TString channel, TString n_btags) {
 
-  TString input_path_measurement = "/nfs/dust/cms/user/matthies/Analysis_80x_v5/CMSSW_8_0_24_patch1/src/UHH2/BoostedSingleTop/theta-workdir/rootfiles/theta-output_stat.root";
-  cout << "Make sure to run THETA to get your input histograms!" << endl;
-  TFile* input_file_measurement = TFile::Open(input_path_measurement, "READ");
+  //TString input_path_measurement = "/nfs/dust/cms/user/matthies/Analysis_80x_v5/CMSSW_8_0_24_patch1/src/UHH2/BoostedSingleTop/theta-workdir/rootfiles/theta-output"++".root";
+  //cout << "Make sure to run THETA to get your input histograms!" << endl;
+  //TFile* input_file_measurement = TFile::Open(input_path_measurement, "READ");
 
   vector<double> result;
 
   for(TString topptbin : {"200to300", "300to400", "400to600", "600to1200"}) {
 
-    TString input_hist_measurement = "BDT_"+topptbin+"_"+n_btags+(channel == "Electron" ? "_ele__" : "_muo__")+"SingleTop_tWch";
-    TH1F* hist_measured = (TH1F*)input_file_measurement->Get(input_hist_measurement);
+    TString input_path = "/nfs/dust/cms/user/matthies/Analysis_80x_v5/CMSSW_8_0_24_patch1/src/UHH2/BoostedSingleTop/theta-workdir/rootfiles/theta-output_"+channel+"_"+n_btags+"_"+topptbin+".root";
+    TFile* input_file = TFile::Open(input_path, "READ");
 
-    hist_measured->Rebin(hist_measured->GetSize()-2);
-    result.push_back(hist_measured->GetBinContent(1));
-    cout << hist_measured->GetBinContent(1) << endl;
-    result.push_back(hist_measured->GetBinError(1));
-    cout << hist_measured->GetBinError(1) << endl;
+    TString input_hist_mean = "BDT_"+topptbin+"_"+n_btags+(channel == "Electron" ? "_ele__" : "_muo__")+"SingleTop_tWch";
+    TH1F* hist_mean = (TH1F*)input_file->Get(input_hist_mean);
+
+    hist_mean->Rebin(hist_mean->GetSize()-2);
+    double mean = hist_mean->GetBinContent(1);
+    result.push_back(mean);
+    //result.push_back(hist_mean->GetBinError(1)); // MC stat. unc. --- Not what we want!!!
+
+    for (auto ud : {"plus", "minus"}) {
+      vector<double> variations;
+      for (auto unc : {"SingleTop_tWch_rate", "btagSFudsg", "btagSFbc"}) {
+	TString input_hist_var = input_hist_mean+"__"+unc+"__"+ud;
+	TH1F* hist_var = (TH1F*)input_file->Get(input_hist_var);
+	hist_var->Rebin(hist_var->GetSize()-2);
+	double var = hist_var->GetBinContent(1);
+	variations.push_back(var);
+      }
+      result.push_back(calcUncertainty(mean, variations));
+    }
   }
 
   return result;
 }
 
 
-void makeFinalPlots(TString channel, TString n_btags, vector<double> datapoints) {
+void makeFinalPlots(TString channel, TString n_btags, vector<double> datapoints, const int number_of_ptbins) {
 
   TString input_path_gen = "/nfs/dust/cms/user/matthies/BoostedSingleTop/RunII_80X_v5/Generator/SingleTop_tWch/";
   std::cout << "Make sure to already have run SFramePlotter over the input files to have the hadded tW sample (top+antitop)!" << std::endl;
@@ -209,36 +236,64 @@ void makeFinalPlots(TString channel, TString n_btags, vector<double> datapoints)
   hist_gen->SetLineColor(597);
   hist_gen->SetLineStyle(2);
   hist_gen->SetLineWidth(2);
-  //hist_gen->GetXaxis()->SetRange(3,5); // used to show less top-pt bins, useful to increase visibility of higher-pt bins
+  hist_gen->GetXaxis()->SetRange(2,5); // used to show less top-pt bins, useful to increase visibility of higher-pt bins
 
   TH1F* hist_data = (TH1F*)hist_gen->Clone();
+
+  //https://root.cern.ch/root/roottalk/roottalk02/0249.html
+  float x[number_of_ptbins];
+  float y[number_of_ptbins];
+  Float_t eyl[] = {0,0,0,0};
+  Float_t eyh[] = {0,0,0,0};
+  float exl[number_of_ptbins];
+  float exh[number_of_ptbins];
+
+  double lumi = 35867.;
+
   for(int i = 2; i < 6; i++) {
-    hist_data->SetBinContent(i,datapoints.at((i-2)*2));
-    hist_data->SetBinError(i,datapoints.at((i-2)*2+1));
+    hist_data->SetBinContent(i,datapoints.at((i-2)*(datapoints.size()/number_of_ptbins)));
+    hist_data->SetBinError(i,datapoints.at((i-2)*(datapoints.size()/number_of_ptbins)+1)); // only upper variations is taken as error for now
+    y[i-2] = hist_data->GetBinContent(i)/lumi;
+    x[i-2] = hist_data->GetXaxis()->GetBinCenter(i);
+    eyh[i-2] = (datapoints.at((i-2)*(datapoints.size()/number_of_ptbins)+1))/lumi;
+    eyl[i-2] = (datapoints.at((i-2)*(datapoints.size()/number_of_ptbins)+2))/lumi;
   }
-  
-  hist_data->Draw("p same e1");
+
+  graph = new TGraphAsymmErrors(number_of_ptbins,x,y,exl,exh,eyl,eyh);
+
+  //hist_data->Draw("a same");
   hist_data->SetLineColor(kBlack);
   hist_data->SetLineStyle(1);
   hist_data->SetMarkerStyle(8);
 
-  double lumi = 1/35867.;
-  //hist_gen->Scale(lumi);
+  //double lumi = 1/35867.;
+  hist_gen->Scale(1./lumi);
   //hist_data->Scale(lumi);
 
-  //c->SetLogy();
+  graph->SetMarkerStyle(21);
+  graph->SetLineWidth(2);
+  graph->Draw("p");
+
+  c->SetLogy();
+
+  hist_gen->GetXaxis()->SetNdivisions(406);
+  //hist_gen->SetMaximum(5.*hist_gen->GetMaximum());
+  //hist_gen->SetMinimum(.1*hist_data->GetBinContent(5));
+  hist_gen->GetYaxis()->SetRangeUser(0.001,1.0);
 
   //==================//
   // SAVE AS EPS PLOT //
   //==================//
 
   c->cd();
-  c->SaveAs("diffXsection_"+channel+"_"+n_btags+".eps");
+  c->SaveAs("plots/diffXsection_"+channel+"_"+n_btags+".eps");
 
 }
 
 
 void finalResults() {
+
+  const int number_of_ptbins = 4;
 
   for(TString channel : {"Electron", "Muon"}) {
     for(TString n_btags : {"1b", "2b"}) {
@@ -249,9 +304,9 @@ void finalResults() {
       }
       auto datapoints = getDataPoints(channel, n_btags);
       for(int i = 0; i < datapoints.size(); i++) {
-	datapoints.at(i) = datapoints.at(i)/efficiencies.at(i/2);
+	datapoints.at(i) = datapoints.at(i)/efficiencies.at(i/(datapoints.size()/number_of_ptbins));
       }
-      makeFinalPlots(channel, n_btags, datapoints);
+      makeFinalPlots(channel, n_btags, datapoints, number_of_ptbins);
     }
   }
 }
