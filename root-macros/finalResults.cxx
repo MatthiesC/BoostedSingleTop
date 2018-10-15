@@ -99,6 +99,8 @@ vector<double> recoEfficiency(TString channel, TString n_btags) {
   legend->Draw();
   legend->SetBorderSize(0);
 
+  gStyle->SetEndErrorSize(0);
+
   //==================//
   // EFFICIENCY HISTO //
   //==================//
@@ -167,19 +169,21 @@ vector<double> recoEfficiency(TString channel, TString n_btags) {
 
 
 // calculates the total uncertainty of a specific bin
-double calcUncertainty(double mean, vector<double> variations) {
+double calcUncertainty(double mean, double mean_data, vector<double> variations, bool bStatOnly) {
 
   double uncertainty = pow(0.025*mean,2); // lumi unc.
+  uncertainty += mean_data; // stat. unc. of real data
   for (auto var : variations) {
     uncertainty += pow(mean-var,2);
   }
   uncertainty = sqrt(uncertainty);
+  if(bStatOnly) uncertainty = sqrt(mean_data);
 
   return uncertainty;
 }
 
 
-vector<double> getDataPoints(TString channel, TString n_btags) {
+vector<double> getDataPoints(TString channel, TString n_btags, bool bStatOnly) {
 
   //TString input_path_measurement = "/nfs/dust/cms/user/matthies/Analysis_80x_v5/CMSSW_8_0_24_patch1/src/UHH2/BoostedSingleTop/theta-workdir/rootfiles/theta-output"++".root";
   //cout << "Make sure to run THETA to get your input histograms!" << endl;
@@ -195,10 +199,16 @@ vector<double> getDataPoints(TString channel, TString n_btags) {
     TString input_hist_mean = "BDT_"+topptbin+"_"+n_btags+(channel == "Electron" ? "_ele__" : "_muo__")+"SingleTop_tWch";
     TH1F* hist_mean = (TH1F*)input_file->Get(input_hist_mean);
 
+    TString input_hist_data = "BDT_"+topptbin+"_"+n_btags+(channel == "Electron" ? "_ele__" : "_muo__")+"DATA";
+    TH1F* hist_data = (TH1F*)input_file->Get(input_hist_data);
+
     hist_mean->Rebin(hist_mean->GetSize()-2);
     double mean = hist_mean->GetBinContent(1);
     result.push_back(mean);
     //result.push_back(hist_mean->GetBinError(1)); // MC stat. unc. --- Not what we want!!!
+
+    hist_data->Rebin(hist_data->GetSize()-2);
+    double mean_data = hist_data->GetBinContent(1);
 
     for (auto ud : {"plus", "minus"}) {
       vector<double> variations;
@@ -209,11 +219,27 @@ vector<double> getDataPoints(TString channel, TString n_btags) {
 	double var = hist_var->GetBinContent(1);
 	variations.push_back(var);
       }
-      result.push_back(calcUncertainty(mean, variations));
+      result.push_back(calcUncertainty(mean, mean_data, variations, bStatOnly)); // syst. unc. if bStatOnly = false, else: tot. unc.
+      result.push_back(calcUncertainty(mean, mean_data, variations, true)); // stat. unc.
     }
   }
 
   return result;
+}
+
+
+void printToScreen(float y[], float eyh[], float eyl[], float eyh_stat[], float eyl_stat[]) {
+
+  cout << "All uncertainties are given relatively:" << endl;
+  float syst_up, syst_down;
+  for (int i = 0; i < 4; i++) {
+    syst_up   = sqrt(pow(eyh[i],2)-pow(eyh_stat[i],2));
+    syst_down = sqrt(pow(eyl[i],2)-pow(eyl_stat[i],2));
+    cout << y[i] << endl;
+    cout << " + " << eyh_stat[i]/y[i] << " - " << eyl_stat[i]/y[i] << " (stat.)" << endl;
+    cout << " + " << syst_up/y[i] << " - " << syst_down/y[i] << " (syst.)" << endl;
+    cout << " + " << eyh[i]/y[i] << " - " << eyl[i]/y[i] << " (tot.)" << endl;
+  }
 }
 
 
@@ -227,16 +253,40 @@ void makeFinalPlots(TString channel, TString n_btags, vector<double> datapoints,
   else if(channel == "Muon") genhist = "nocuts/MuoChannel_TopPt_GenCut";
   TH1F* hist_gen = (TH1F*)input_file_gen->Get(genhist);
 
-  TCanvas* c = new TCanvas("c","",600,600);
+  TCanvas* c2 = new TCanvas("c2","",600,800);
+
+  double splitter = 0.375; // decide where to put the border between the two pads
+  
+  //==============//
+  // UPPER HISTOS //
+  //==============//
+
+  TPad* upper2 = new TPad("upper2","",0,splitter,1,1);
+
+  upper2->SetMargin(.15,.05,.0,.1*6/5);
+  upper2->Draw();
+  upper2->cd();
 
   hist_gen->Draw("hist");
   hist_gen->SetTitle("");
   hist_gen->GetXaxis()->SetTitle("top-quark p_{T} [GeV]");
-  hist_gen->GetYaxis()->SetTitle("d#sigma/dp_{T} [pb]");
+  hist_gen->GetYaxis()->SetTitle("d#sigma/dp_{T} #scale[0.7]{#left[#frac{pb}{100 GeV}#right]}");
   hist_gen->SetLineColor(597);
   hist_gen->SetLineStyle(2);
   hist_gen->SetLineWidth(2);
   hist_gen->GetXaxis()->SetRange(2,5); // used to show less top-pt bins, useful to increase visibility of higher-pt bins
+
+  hist_gen->GetYaxis()->SetTitleOffset(1.3); // 1.5
+  hist_gen->GetYaxis()->SetTitleSize(0.05);
+  hist_gen->GetYaxis()->SetLabelSize(0.05);
+  hist_gen->GetXaxis()->SetTitleOffset(1.4);
+  hist_gen->GetXaxis()->SetNdivisions(507);
+
+  // Divide by 100 GeV:
+  hist_gen->SetBinContent(4,hist_gen->GetBinContent(4)/2.);
+  hist_gen->SetBinError(4,hist_gen->GetBinError(4)/2.);
+  hist_gen->SetBinContent(5,hist_gen->GetBinContent(5)/6.);
+  hist_gen->SetBinError(5,hist_gen->GetBinError(5)/6.);
 
   TH1F* hist_data = (TH1F*)hist_gen->Clone();
 
@@ -245,48 +295,151 @@ void makeFinalPlots(TString channel, TString n_btags, vector<double> datapoints,
   float y[number_of_ptbins];
   Float_t eyl[] = {0,0,0,0};
   Float_t eyh[] = {0,0,0,0};
-  float exl[number_of_ptbins];
-  float exh[number_of_ptbins];
+  float exl[] = {50,50,100,300};
+  float exh[] = {50,50,100,300};
+  float eyl_stat[] = {0,0,0,0};
+  float eyh_stat[] = {0,0,0,0};
 
-  double lumi = 35867.;
+  double luminosity = 35867.;
 
   for(int i = 2; i < 6; i++) {
     hist_data->SetBinContent(i,datapoints.at((i-2)*(datapoints.size()/number_of_ptbins)));
     hist_data->SetBinError(i,datapoints.at((i-2)*(datapoints.size()/number_of_ptbins)+1)); // only upper variations is taken as error for now
-    y[i-2] = hist_data->GetBinContent(i)/lumi;
+    y[i-2] = hist_data->GetBinContent(i)/luminosity*(1./(i == 4 ? 2 : (i == 5 ? 6 : 1)));
     x[i-2] = hist_data->GetXaxis()->GetBinCenter(i);
-    eyh[i-2] = (datapoints.at((i-2)*(datapoints.size()/number_of_ptbins)+1))/lumi;
-    eyl[i-2] = (datapoints.at((i-2)*(datapoints.size()/number_of_ptbins)+2))/lumi;
+    eyh[i-2] = (datapoints.at((i-2)*(datapoints.size()/number_of_ptbins)+1))/luminosity*(1./(i == 4 ? 2 : (i == 5 ? 6 : 1)));
+    eyl[i-2] = (datapoints.at((i-2)*(datapoints.size()/number_of_ptbins)+3))/luminosity*(1./(i == 4 ? 2 : (i == 5 ? 6 : 1)));
+    eyh_stat[i-2] = (datapoints.at((i-2)*(datapoints.size()/number_of_ptbins)+2))/luminosity*(1./(i == 4 ? 2 : (i == 5 ? 6 : 1)));
+    eyl_stat[i-2] = (datapoints.at((i-2)*(datapoints.size()/number_of_ptbins)+4))/luminosity*(1./(i == 4 ? 2 : (i == 5 ? 6 : 1)));
+
+    //printToScreen(y[i-2],eyh[i-2],eyl[i-2],eyh_stat[i-2],eyl_stat[i-2]);
   }
 
+  printToScreen(y,eyh,eyl,eyh_stat,eyl_stat);
+
   graph = new TGraphAsymmErrors(number_of_ptbins,x,y,exl,exh,eyl,eyh);
+  graph_stat = new TGraphAsymmErrors(number_of_ptbins,x,y,exl,exh,eyl_stat,eyh_stat);
 
   //hist_data->Draw("a same");
   hist_data->SetLineColor(kBlack);
   hist_data->SetLineStyle(1);
   hist_data->SetMarkerStyle(8);
 
-  //double lumi = 1/35867.;
-  hist_gen->Scale(1./lumi);
-  //hist_data->Scale(lumi);
+  //double luminosity = 1/35867.;
+  hist_gen->Scale(1./luminosity);
+  //hist_data->Scale(luminosity);
 
-  graph->SetMarkerStyle(21);
+  graph->SetMarkerStyle(8); // 21
   graph->SetLineWidth(2);
   graph->Draw("p");
 
-  c->SetLogy();
+  graph_stat->SetMarkerStyle(8); // 21
+  graph_stat->SetLineWidth(2);
+  graph_stat->Draw("p");
+
+  upper2->SetLogy();
+
+  gStyle->SetEndErrorSize(8);
 
   hist_gen->GetXaxis()->SetNdivisions(406);
   //hist_gen->SetMaximum(5.*hist_gen->GetMaximum());
   //hist_gen->SetMinimum(.1*hist_data->GetBinContent(5));
-  hist_gen->GetYaxis()->SetRangeUser(0.001,1.0);
+  hist_gen->GetYaxis()->SetRangeUser(0.0002,1.);
+
+  /*TText *simulation = new TText(.15,1-0.09*6/5,"Simulation");
+  simulation->SetNDC();
+  //simulation->SetTextAlign(12);
+  simulation->SetTextFont(73);
+  simulation->SetTextSize(24);
+  simulation->Draw();*/
+
+  TString category_1 = "tW #rightarrow ";
+  TString category_2 = (channel == "Electron" ? "e+jets " : "#mu+jets ");
+  TString category_3 = (n_btags == "1b" ? "(1 b-tag)" : "(#geq 2 b-tags)");
+
+  TLatex *category = new TLatex(.15,1-0.09*6/5,category_1+category_2+category_3); //.2,1-0.09*6/5-0.1
+  category->SetNDC();
+  //category->SetTextAlign(12);
+  category->SetTextFont(43);
+  category->SetTextSize(24);
+  category->Draw();
+
+  TLatex *lumi = new TLatex(.95,1-0.09*6/5,"35.9 fb^{-1} (13 TeV)");
+  lumi->SetNDC();
+  lumi->SetTextAlign(31);
+  lumi->SetTextFont(43);
+  lumi->SetTextSize(24);
+  lumi->Draw();
+
+  auto legend = new TLegend(0.65,0.52,0.92,0.80);
+  legend->AddEntry(hist_data, "Data");
+  legend->AddEntry(hist_gen, "POWHEG");
+  legend->Draw();
+  legend->SetBorderSize(0);
+
+
+
+  //=============//
+  // RATIO HISTO //
+  //=============//
+
+  c2->cd();
+  TPad* lower2 = new TPad("lower2", "",0,0,1,splitter);
+
+  lower2->SetMargin(.15,.05,.3,.0);
+  lower2->Draw();
+  lower2->cd();
+
+  TH1F* hist_ratio = (TH1F*)hist_gen->Clone();
+
+  for(int i = 2; i < 6; i++) {
+    float scalefactor = hist_ratio->GetBinContent(i);
+    y[i-2] = y[i-2]/scalefactor;
+    eyh[i-2] = eyh[i-2]/scalefactor;
+    eyl[i-2] = eyl[i-2]/scalefactor;
+    eyh_stat[i-2] = eyh_stat[i-2]/scalefactor;
+    eyl_stat[i-2] = eyl_stat[i-2]/scalefactor;
+    hist_ratio->SetBinContent(i,1); // to get a nice blue line in the center at 1
+  }
+
+  hist_ratio->Draw();
+
+  hist_ratio->SetMaximum(2.7);
+
+  hist_ratio->GetYaxis()->SetLabelSize(0.05/(1-splitter));
+  hist_ratio->GetXaxis()->SetLabelSize(0.05/(1-splitter));
+  hist_ratio->GetXaxis()->SetTitleOffset(1.5);
+  hist_ratio->GetXaxis()->SetNdivisions(507);
+  //hist_ratio->SetLineStyle(1);
+
+  //hist_ratio->SetLineColor(kBlack);
+  hist_ratio->GetXaxis()->SetTitle("top-quark p_{T} [GeV]");
+  hist_ratio->GetYaxis()->SetTitle("Data / MC");
+  hist_ratio->GetYaxis()->CenterTitle();
+  hist_ratio->GetYaxis()->SetTitleSize(0.05/(1-splitter));
+  hist_ratio->GetXaxis()->SetTitleSize(0.05/(1-splitter));
+  hist_ratio->GetYaxis()->SetTitleOffset(0.9);
+
+  ratio_graph = new TGraphAsymmErrors(number_of_ptbins,x,y,exl,exh,eyl,eyh);
+  ratio_graph_stat = new TGraphAsymmErrors(number_of_ptbins,x,y,exl,exh,eyl_stat,eyh_stat);
+
+  ratio_graph->SetMarkerStyle(8);
+  ratio_graph->SetLineWidth(2);
+  ratio_graph->Draw("p");
+
+  ratio_graph_stat->SetMarkerStyle(8);
+  ratio_graph_stat->SetLineWidth(2);
+  ratio_graph_stat->Draw("p");
+
+  TGaxis *axis = new TGaxis(200,hist_ratio->GetMaximum(),1200,hist_ratio->GetMaximum(),200,1200,507,"-");
+  axis->Draw();
 
   //==================//
   // SAVE AS EPS PLOT //
   //==================//
 
-  c->cd();
-  c->SaveAs("plots/diffXsection_"+channel+"_"+n_btags+".eps");
+  c2->cd();
+  c2->SaveAs("plots/diffXsection_"+channel+"_"+n_btags+".eps");
 
 }
 
@@ -294,6 +447,7 @@ void makeFinalPlots(TString channel, TString n_btags, vector<double> datapoints,
 void finalResults() {
 
   const int number_of_ptbins = 4;
+  const bool only_stat_errors = false;
 
   for(TString channel : {"Electron", "Muon"}) {
     for(TString n_btags : {"1b", "2b"}) {
@@ -302,7 +456,7 @@ void finalResults() {
       for(int i = 0; i < efficiencies.size(); i++) {
 	cout << efficiencies.at(i) << endl;
       }
-      auto datapoints = getDataPoints(channel, n_btags);
+      auto datapoints = getDataPoints(channel, n_btags, only_stat_errors);
       for(int i = 0; i < datapoints.size(); i++) {
 	datapoints.at(i) = datapoints.at(i)/efficiencies.at(i/(datapoints.size()/number_of_ptbins));
       }

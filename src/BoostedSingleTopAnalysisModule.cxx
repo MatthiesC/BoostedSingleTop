@@ -88,7 +88,7 @@ namespace uhh2 {
 
     // --- Selections and Histogramms --- //
     std::unique_ptr<AndHists> hist_presel, hist_nbjetcut_loose, hist_nbjetcut_medium; //hist_2bjetcut_tight, hist_1bjetcut_tight; 
-    std::unique_ptr<MatchHists> hist_match_tw, hist_match_tt;
+    std::unique_ptr<MatchHists> hist_match_tw, hist_match_tw_1b, hist_match_tw_2b, hist_match_tt;
     std::unique_ptr<MVAHists> hist_mva_0t1b, hist_mva_0t2b, hist_mva_1t, hist_mva_1t1b, hist_mva_1t2b;
     std::unique_ptr<Hists> hist_BTagMCEfficiency;
 
@@ -239,6 +239,8 @@ namespace uhh2 {
     hist_nbjetcut_medium->add_hist(new HOTVRHists(ctx, "NBJetCutMedium_HOTVRtagged", id_toptag));
 
     hist_match_tw.reset(new MatchHists(ctx, "Matching_tW", id_toptag));
+    hist_match_tw_1b.reset(new MatchHists(ctx, "Matching_tW_1b", id_toptag));
+    hist_match_tw_2b.reset(new MatchHists(ctx, "Matching_tW_2b", id_toptag));
     hist_match_tt.reset(new MatchHists(ctx, "Matching_tt", id_toptag));
 
     // --- Declare new Output for TMVA --- //
@@ -460,8 +462,10 @@ namespace uhh2 {
     if(sel_toptags_1->passes(event) && (sel_1bjetcut_medium->passes(event) || sel_2bjetcut_medium->passes(event))) {
       if(dataset_name.find("SingleTop_T_tWch") == 0 || dataset_name.find("SingleTop_Tbar_tWch") == 0)
 	{
-	  SingleTopGen_tWchProd->process(event);
+	  SingleTopGen_tWchProd->process(event); // needs to be called before and match hists can be filled!!!
 	  hist_match_tw->fill(event);
+	  if(sel_1bjetcut_medium->passes(event)) hist_match_tw_1b->fill(event);
+	  else if(sel_2bjetcut_medium->passes(event)) hist_match_tw_2b->fill(event);
 	}
       else if(dataset_name.find("TTbar") == 0) // find "xyz" at position 0 of name
 	{

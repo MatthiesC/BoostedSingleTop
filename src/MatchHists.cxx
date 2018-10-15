@@ -62,6 +62,7 @@ MatchHists::MatchHists(Context & ctx, const string & dirname, const boost::optio
   H_match_deltaPhi_top = book<TH1F>("match_Phi_top", "#Delta#phi(t^{reco}, t^{gen})", 10, -M_PI, M_PI);
   H_match_deltaPhi_neu = book<TH1F>("match_Phi_neu", "#Delta#phi(#nu^{reco}, #nu^{gen})", 10, -M_PI, M_PI);
 
+  h_TopPt_GenAndReco =  book<TH1F>("TopPt_GenAndReco", "top quark p_{T}^{gen} [GeV]", rebin_pt_bincount, rebin_pt);
 }
 
 void MatchHists::fill(const Event & e)
@@ -99,8 +100,8 @@ void MatchHists::fill(const Event & e)
     }
   sort_by_pt<Jet>(bjets);
 
-  // Check whether we actually have the signal signature ...
-  if(!(toptaggedjets.size() == 1 && (muons.size() + electrons.size() == 1) && n_btags > 0)) return;
+  // Check whether we actually have the signal signature ... NEW STUFF: ALREADY DONE IN THE ANALYSIS MODULE!!!
+  //if(!(toptaggedjets.size() == 1 && (muons.size() + electrons.size() == 1) && n_btags > 0)) return;
 
   // Identify some important particles on reco level ...
   TopJet hotvrjet = toptaggedjets.at(0);
@@ -231,6 +232,40 @@ void MatchHists::fill(const Event & e)
   H_match_deltaPhi_lep->Fill(deltaPhi(lepton, primlept), w);
   H_match_deltaPhi_top->Fill(deltaPhi(top, hotvrjet), w);
   H_match_deltaPhi_neu->Fill(deltaPhi(met, neutrino), w);
+
+
+
+  ///////////////
+  // NEW STUFF //
+  ///////////////
+
+  bool bSignal;
+
+  bool isEleChannel = electrons.size() > 0;
+  bool isMuoChannel = muons.size() > 0;
+
+  if(isEleChannel && isMuoChannel) throw logic_error("MathcHists: Event found which has both electrons and muons on reco level. Abort!");
+
+  if(is_tw && e.is_valid(h_singletopgen_twch)) {
+
+    const auto & gen_tw = e.get(h_singletopgen_twch);
+    DecayChannel = gen_tw.DecayChannel();
+
+    if(isEleChannel) bSignal = (gen_tw.IsTopHadronicDecay() && gen_tw.IsAssToElectronDecay());
+    else bSignal = (gen_tw.IsTopHadronicDecay() && gen_tw.IsAssToMuonDecay());
+
+    if(bSignal)
+      {
+	top = gen_tw.Top().v4();
+	if(abs(top.Eta()) < 2.5 && top.Pt() > 200)
+	  {
+	    h_TopPt_GenAndReco->Fill(top.Pt(), w); // plot that helps to calculate the purity
+	  }
+      }
+  }
+
+
+
 }
 
 MatchHists::~MatchHists(){}
