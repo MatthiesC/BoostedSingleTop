@@ -12,7 +12,7 @@ void copyAndRenameHists() //(TString channel)
       std::vector<TString> fileNames_DATA {"DATA"};
       std::vector<TString> fileNames_MC {"SingleTop_tWch", "SingleTop_stch", "TTbar", "WJets", "DYJets", "Diboson"}; //, "QCD"};
       std::vector<vector<TString>> fileNames {fileNames_DATA, fileNames_MC};
-      std::vector<TString> systNames {"", "syst/btagSFbc_up/", "syst/btagSFbc_down/", "syst/btagSFudsg_up/", "syst/btagSFudsg_down/", "syst/scale_up/", "syst/scale_down/"};
+      std::vector<TString> systNames {"", "syst/btagSFbc_up/", "syst/btagSFbc_down/", "syst/btagSFudsg_up/", "syst/btagSFudsg_down/", "syst/scale_up/", "syst/scale_down/", "syst/jec_up/", "syst/jec_down/", "syst/jer_up/", "syst/jer_down/", "syst/pileup_up/", "syst/pileup_down/"};
   
       for(TString pt_bin : {"200to300", "300to400", "400to600", "600to1200"})
 	{
@@ -53,6 +53,7 @@ void copyAndRenameHists() //(TString channel)
 			      final_file->cd(); // change to this file to be able to write on it
 			      if (fileNames.at(i).at(j) == "SingleTop_tWch" && systSuffix.BeginsWith("__scale")) continue; // exclude muR/muF variation for single-top tW
 			      input_histo->Write();
+			      input_file_->Close();
 			      //}
 			}
 		    }

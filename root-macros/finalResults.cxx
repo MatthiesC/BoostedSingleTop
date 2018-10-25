@@ -172,12 +172,12 @@ vector<double> recoEfficiency(TString channel, TString n_btags) {
 double calcUncertainty(double mean, double mean_data, vector<double> variations, bool bStatOnly) {
 
   double uncertainty = pow(0.025*mean,2); // lumi unc.
-  uncertainty += mean_data; // stat. unc. of real data
+  //uncertainty += mean; // stat. unc. of real data
   for (auto var : variations) {
     uncertainty += pow(mean-var,2);
   }
   uncertainty = sqrt(uncertainty);
-  if(bStatOnly) uncertainty = sqrt(mean_data);
+  if(bStatOnly) uncertainty = abs(mean-variations.at(0));
 
   return uncertainty;
 }
@@ -212,7 +212,7 @@ vector<double> getDataPoints(TString channel, TString n_btags, bool bStatOnly) {
 
     for (auto ud : {"plus", "minus"}) {
       vector<double> variations;
-      for (auto unc : {"SingleTop_tWch_rate", "btagSFudsg", "btagSFbc"}) {
+      for (auto unc : {"SingleTop_tWch_rate", "btagSFudsg", "btagSFbc", "jec", "jer", "pileup"}) {
 	TString input_hist_var = input_hist_mean+"__"+unc+"__"+ud;
 	TH1F* hist_var = (TH1F*)input_file->Get(input_hist_var);
 	hist_var->Rebin(hist_var->GetSize()-2);
@@ -404,7 +404,8 @@ void makeFinalPlots(TString channel, TString n_btags, vector<double> datapoints,
 
   hist_ratio->Draw();
 
-  hist_ratio->SetMaximum(2.7);
+  hist_ratio->SetMaximum(1.99999);
+  hist_ratio->GetYaxis()->SetNdivisions(505);
 
   hist_ratio->GetYaxis()->SetLabelSize(0.05/(1-splitter));
   hist_ratio->GetXaxis()->SetLabelSize(0.05/(1-splitter));

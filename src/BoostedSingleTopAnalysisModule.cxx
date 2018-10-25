@@ -452,9 +452,12 @@ namespace uhh2 {
     if(do_mva) {
       mvaD = discr_BDT_->eval(float(n_btags_medium), float(deltaPhi(lepton.v4(), bjet0.v4())), float(deltaPhi(topjet, bjet0.v4())), float(M_LepNuB.at(0)), float(pt_balance), float(Pt_Wass.at(0)), float(lepton.v4().pt()), float(lepton.v4().eta()), float(deltaPhi(lepton, nextjet)));//, float(met_pt));
       event.set(h_mvadiscr, mvaD);
+      if(mvaD > 0.999) mvaD = 0.999; // if this is not set, purely signal-like events are not shown in the last bin but migrate into the overflow bin...
       mvaD_1b = discr_BDT_1b->eval(float(deltaPhi(lepton.v4(), bjet0.v4())), float(deltaPhi(topjet, bjet0.v4())), float(M_LepNuB.at(0)), float(pt_balance), float(Pt_Wass.at(0)), float(lepton.v4().pt()), float(lepton.v4().eta()), float(deltaPhi(lepton, nextjet)));
+      if(mvaD_1b > 0.999) mvaD_1b = 0.999;
       event.set(h_mvadiscr_1b, mvaD_1b);
       mvaD_2b = discr_BDT_2b->eval(float(n_btags_medium), float(deltaPhi(lepton.v4(), bjet0.v4())), float(deltaPhi(topjet, bjet0.v4())), float(M_LepNuB.at(0)), float(pt_balance), float(Pt_Wass.at(0)), float(lepton.v4().pt()), float(lepton.v4().eta()), float(deltaPhi(lepton, nextjet)));
+      if(mvaD_2b > 0.999) mvaD_2b = 0.999;
       event.set(h_mvadiscr_2b, mvaD_2b);
     }
 

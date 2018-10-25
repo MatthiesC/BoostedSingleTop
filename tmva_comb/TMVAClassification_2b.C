@@ -151,18 +151,18 @@ int TMVAClassification_2b( TString myMethodList = "" )
    //Use["BDT"] = 0; // Use["BDT_100_25_05"] = 1; 
 
 
-   Use["BDT_50_50_05_20"]  = 1;
-   Use["BDT_50_50_05_15"]  = 1;
-   Use["BDT_50_50_05_10"]  = 1;
-   Use["BDT_50_25_05_20"]  = 1;
-   Use["BDT_50_25_05_15"]  = 1;
-   Use["BDT_50_25_05_10"]  = 1;
-   Use["BDT_50_50_03_20"]  = 1;
-   Use["BDT_50_50_03_15"]  = 1;
-   Use["BDT_50_50_03_10"]  = 1;
-   Use["BDT_50_25_03_20"]  = 1;
-   Use["BDT_50_25_03_15"]  = 1;
-   Use["BDT_50_25_03_10"]  = 1;
+   Use["BDT_50_50_05_20"]  = 0;
+   Use["BDT_50_50_05_15"]  = 0;
+   Use["BDT_50_50_05_10"]  = 0;
+   Use["BDT_50_25_05_20"]  = 0;
+   Use["BDT_50_25_05_15"]  = 0;
+   Use["BDT_50_25_05_10"]  = 0;
+   Use["BDT_50_50_03_20"]  = 0;
+   Use["BDT_50_50_03_15"]  = 0;
+   Use["BDT_50_50_03_10"]  = 0;
+   Use["BDT_50_25_03_20"]  = 0;
+   Use["BDT_50_25_03_15"]  = 0;
+   Use["BDT"] = 1; //Use["BDT_50_25_03_10"]  = 0;
 
    Use["BDT_80_50_05"]  = 0;
 
@@ -172,7 +172,7 @@ int TMVAClassification_2b( TString myMethodList = "" )
    Use["BDT_100_25_025"] = 0;
    Use["BDT_100_25_02"] = 0;
    Use["BDT_100_25_015"] = 0;
-   Use["BDT"] = 0; // Use["BDT_100_25_01"] = 0;
+   Use["BDT_other"] = 0; // Use["BDT_100_25_01"] = 0;
 
    Use["BDT_50_50_03"]  = 0;
    Use["BDT_50_50_07"]  = 0;
@@ -246,13 +246,13 @@ int TMVAClassification_2b( TString myMethodList = "" )
    factory->AddVariable( "var4",                "Variable 4", "units", 'F' );*/
 
    // in case of 1-btag region, remove first variable:
-   factory->AddVariable( "tmva_n_btags", "N of b-tags", "", 'I' );
+   factory->AddVariable( "tmva_n_btags", "b-tags", "", 'I' );
    factory->AddVariable( "tmva_deltaphi_bottomlepton", "#Delta#phi(l,b)", "rad", 'F' );
    factory->AddVariable( "tmva_deltaphi_bottomtoptag", "#Delta#phi(t,b)", "rad", 'F' );
-   factory->AddVariable( "tmva_pseudotop_mass", "l#nub mass", "GeV", 'F' );
-   factory->AddVariable( "tmva_ptbalance", "pT balance", "", 'F' ); //between top-jet and associated W boson
-   factory->AddVariable( "tmva_wass_pt", "asso. W pT", "GeV", 'F' );
-   factory->AddVariable( "tmva_lepton_pt", "lepton pT", "GeV", 'F' );
+   factory->AddVariable( "tmva_pseudotop_mass", "m_{l#nub}", "GeV", 'F' );
+   factory->AddVariable( "tmva_ptbalance", "p_{T} balance", "", 'F' ); //between top-jet and associated W boson
+   factory->AddVariable( "tmva_wass_pt", "asso. W p_{T}", "GeV", 'F' );
+   factory->AddVariable( "tmva_lepton_pt", "lepton p_{T}", "GeV", 'F' );
    factory->AddVariable( "tmva_lepton_eta", "lepton #eta", "", 'F' );
    factory->AddVariable( "tmva_deltaphi_leptonnextjet", "#Delta#phi(l,jet)", "rad", 'F' );
    //factory->AddVariable( "tmva_met_pt", "missing ET", "GeV", 'F' );
@@ -273,24 +273,24 @@ int TMVAClassification_2b( TString myMethodList = "" )
    std::vector<TFile*> input;
    
    // Signal samples
-   input.push_back( TFile::Open( dirname+"Muon/uhh2.AnalysisModuleRunner.MC.SingleTop_T_tWch.root" ) );
-   input.push_back( TFile::Open( dirname+"Muon/uhh2.AnalysisModuleRunner.MC.SingleTop_Tbar_tWch.root" ) );
-   input.push_back( TFile::Open( dirname+"Electron/uhh2.AnalysisModuleRunner.MC.SingleTop_T_tWch.root" ) );
-   input.push_back( TFile::Open( dirname+"Electron/uhh2.AnalysisModuleRunner.MC.SingleTop_Tbar_tWch.root" ) );
+   input.push_back( TFile::Open( dirname+"Muon/2b/uhh2.AnalysisModuleRunner.MC.SingleTop_T_tWch.root" ) );
+   input.push_back( TFile::Open( dirname+"Muon/2b/uhh2.AnalysisModuleRunner.MC.SingleTop_Tbar_tWch.root" ) );
+   input.push_back( TFile::Open( dirname+"Electron/2b/uhh2.AnalysisModuleRunner.MC.SingleTop_T_tWch.root" ) );
+   input.push_back( TFile::Open( dirname+"Electron/2b/uhh2.AnalysisModuleRunner.MC.SingleTop_Tbar_tWch.root" ) );
 
    /*
-   input.push_back( TFile::Open( dirname+"Muon/uhh2.AnalysisModuleRunner.MC.SingleTop_T_tch.root" ) );
-   input.push_back( TFile::Open( dirname+"Muon/uhh2.AnalysisModuleRunner.MC.SingleTop_Tbar_tch.root" ) );
-   input.push_back( TFile::Open( dirname+"Muon/uhh2.AnalysisModuleRunner.MC.SingleTop_TTbar_sch.root" ) );
+   input.push_back( TFile::Open( dirname+"Muon/2b/uhh2.AnalysisModuleRunner.MC.SingleTop_T_tch.root" ) );
+   input.push_back( TFile::Open( dirname+"Muon/2b/uhh2.AnalysisModuleRunner.MC.SingleTop_Tbar_tch.root" ) );
+   input.push_back( TFile::Open( dirname+"Muon/2b/uhh2.AnalysisModuleRunner.MC.SingleTop_TTbar_sch.root" ) );
    */
 
    // TTbar background samples
-   input.push_back( TFile::Open( dirname+"Muon/uhh2.AnalysisModuleRunner.MC.TTbarM0to700.root" ) );
-   input.push_back( TFile::Open( dirname+"Muon/uhh2.AnalysisModuleRunner.MC.TTbarM700to1000.root" ) );
-   input.push_back( TFile::Open( dirname+"Muon/uhh2.AnalysisModuleRunner.MC.TTbarM1000toInf.root" ) );
-   input.push_back( TFile::Open( dirname+"Electron/uhh2.AnalysisModuleRunner.MC.TTbarM0to700.root" ) );
-   input.push_back( TFile::Open( dirname+"Electron/uhh2.AnalysisModuleRunner.MC.TTbarM700to1000.root" ) );
-   input.push_back( TFile::Open( dirname+"Electron/uhh2.AnalysisModuleRunner.MC.TTbarM1000toInf.root" ) );
+   input.push_back( TFile::Open( dirname+"Muon/2b/uhh2.AnalysisModuleRunner.MC.TTbarM0to700.root" ) );
+   input.push_back( TFile::Open( dirname+"Muon/2b/uhh2.AnalysisModuleRunner.MC.TTbarM700to1000.root" ) );
+   input.push_back( TFile::Open( dirname+"Muon/2b/uhh2.AnalysisModuleRunner.MC.TTbarM1000toInf.root" ) );
+   input.push_back( TFile::Open( dirname+"Electron/2b/uhh2.AnalysisModuleRunner.MC.TTbarM0to700.root" ) );
+   input.push_back( TFile::Open( dirname+"Electron/2b/uhh2.AnalysisModuleRunner.MC.TTbarM700to1000.root" ) );
+   input.push_back( TFile::Open( dirname+"Electron/2b/uhh2.AnalysisModuleRunner.MC.TTbarM1000toInf.root" ) );
 
    /*
    input.push_back( TFile::Open( dirname+"uhh2.AnalysisModuleRunner.MC.WJetsPT100to250.root" ) );
@@ -682,8 +682,12 @@ int TMVAClassification_2b( TString myMethodList = "" )
    if (Use["BDT_50_25_03_15"])
      factory->BookMethod( TMVA::Types::kBDT, "BDT_50_25_03_15",
 			  "!H:!V:NTrees=50:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.3:SeparationType=GiniIndex:nCuts=15" );
-   if (Use["BDT_50_25_03_10"])
+   /*if (Use["BDT_50_25_03_10"])
      factory->BookMethod( TMVA::Types::kBDT, "BDT_50_25_03_10",
+			  "!H:!V:NTrees=50:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.3:SeparationType=GiniIndex:nCuts=10" );
+   */
+   if (Use["BDT"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT",
 			  "!H:!V:NTrees=50:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.3:SeparationType=GiniIndex:nCuts=10" );
 
 
@@ -717,8 +721,8 @@ int TMVAClassification_2b( TString myMethodList = "" )
    if (Use["BDT_100_25_015"])
      factory->BookMethod( TMVA::Types::kBDT, "BDT_100_25_015",
 			  "!H:!V:NTrees=100:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.15:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
-   if (Use["BDT"])
-     factory->BookMethod( TMVA::Types::kBDT, "BDT",
+   if (Use["BDT_other"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_other",
 			  "!H:!V:NTrees=100:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.1:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
 
 

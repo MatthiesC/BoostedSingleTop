@@ -160,9 +160,9 @@ int TMVAClassification_1b( TString myMethodList = "" )
    Use["BDT_100_50_03_20"]  = 0;
    Use["BDT_100_50_03_15"]  = 0;
    Use["BDT_100_50_03_10"]  = 0;
-   Use["BDT_100_25_01_20"]  = 1;
-   Use["BDT_100_25_01_15"]  = 1;
-   Use["BDT_100_25_01_10"]  = 1;
+   Use["BDT_100_25_01_20"]  = 0;
+   Use["BDT_100_25_01_15"]  = 0;
+   Use["BDT"] = 1; //Use["BDT_100_25_01_10"]  = 1;
 
    Use["BDT_80_50_05"]  = 0;
 
@@ -172,7 +172,7 @@ int TMVAClassification_1b( TString myMethodList = "" )
    Use["BDT_100_25_025"] = 0;
    Use["BDT_100_25_02"] = 0;
    Use["BDT_100_25_015"] = 0;
-   Use["BDT"] = 0; // Use["BDT_100_25_01"] = 0;
+   Use["BDT_other"] = 0; // Use["BDT_100_25_01"] = 0;
 
    Use["BDT_50_50_03"]  = 0;
    Use["BDT_50_50_07"]  = 0;
@@ -249,10 +249,10 @@ int TMVAClassification_1b( TString myMethodList = "" )
    //factory->AddVariable( "tmva_n_btags", "N of b-tags", "", 'I' );
    factory->AddVariable( "tmva_deltaphi_bottomlepton", "#Delta#phi(l,b)", "rad", 'F' );
    factory->AddVariable( "tmva_deltaphi_bottomtoptag", "#Delta#phi(t,b)", "rad", 'F' );
-   factory->AddVariable( "tmva_pseudotop_mass", "l#nub mass", "GeV", 'F' );
-   factory->AddVariable( "tmva_ptbalance", "pT balance", "", 'F' ); //between top-jet and associated W boson
-   factory->AddVariable( "tmva_wass_pt", "asso. W pT", "GeV", 'F' );
-   factory->AddVariable( "tmva_lepton_pt", "lepton pT", "GeV", 'F' );
+   factory->AddVariable( "tmva_pseudotop_mass", "m_{l#nub}", "GeV", 'F' );
+   factory->AddVariable( "tmva_ptbalance", "p_{T} balance", "", 'F' ); //between top-jet and associated W boson
+   factory->AddVariable( "tmva_wass_pt", "asso. W p_{T}", "GeV", 'F' );
+   factory->AddVariable( "tmva_lepton_pt", "lepton p_{T}", "GeV", 'F' );
    factory->AddVariable( "tmva_lepton_eta", "lepton #eta", "", 'F' );
    factory->AddVariable( "tmva_deltaphi_leptonnextjet", "#Delta#phi(l,jet)", "rad", 'F' );
    //factory->AddVariable( "tmva_met_pt", "missing ET", "GeV", 'F' );
@@ -682,11 +682,14 @@ int TMVAClassification_1b( TString myMethodList = "" )
    if (Use["BDT_100_25_01_15"])
      factory->BookMethod( TMVA::Types::kBDT, "BDT_100_25_01_15",
 			  "!H:!V:NTrees=100:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.1:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=15" );
-   if (Use["BDT_100_25_01_10"])
+   /*if (Use["BDT_100_25_01_10"])
      factory->BookMethod( TMVA::Types::kBDT, "BDT_100_25_01_10",
 			  "!H:!V:NTrees=100:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.1:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=10" );
-
-
+   */
+   if (Use["BDT"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT",
+			  "!H:!V:NTrees=100:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.1:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=10" );
+  
 
 
 
@@ -717,8 +720,8 @@ int TMVAClassification_1b( TString myMethodList = "" )
    if (Use["BDT_100_25_015"])
      factory->BookMethod( TMVA::Types::kBDT, "BDT_100_25_015",
 			  "!H:!V:NTrees=100:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.15:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
-   if (Use["BDT"])
-     factory->BookMethod( TMVA::Types::kBDT, "BDT",
+   if (Use["BDT_other"])
+     factory->BookMethod( TMVA::Types::kBDT, "BDT_other",
 			  "!H:!V:NTrees=100:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.1:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
 
 
