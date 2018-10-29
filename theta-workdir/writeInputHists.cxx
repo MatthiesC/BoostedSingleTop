@@ -31,10 +31,20 @@ void copyAndRenameHists() //(TString channel)
 			      std::cout << "Copying hists from input file:   " << input_file << std::endl;
 			      TFile *input_file_ = TFile::Open(input_file, "read");
 			      TH1F *input_histo = (TH1F*)input_file_->Get("MVA_1t"+n_btags+"/"+pt_bin+"_mvaD"); // _mvaD has 40 bins!
+			      ////////////////////////////////////////////////////////////////////////////////
+			      double bin40 = input_histo->GetBinContent(40);
+			      double bin41 = input_histo->GetBinContent(41);
+			      input_histo->SetBinContent(40,bin40+bin41); // include overflow into last bin (since BDT=1 went into the overflow bin)
+			      double bin40_err = input_histo->GetBinError(40);
+			      double bin41_err = input_histo->GetBinError(41);
+			      input_histo->SetBinError(40,sqrt(bin40_err*bin40_err+bin41_err*bin41_err));
+			      input_histo->SetBinContent(41,0); // set overflow bin content to zero
+			      input_histo->SetBinError(41,0);
+			      ////////////////////////////////////////////////////////////////////////////////
 			      if (pt_bin == "200to300") input_histo->Rebin(2); // 20 bins
-			      if (pt_bin == "300to400") input_histo->Rebin(4); // 20 bins
-			      if (pt_bin == "400to600") input_histo->Rebin(8); // 20 bins
-			      if (pt_bin == "600to1200") input_histo->Rebin(10); // 10 bins
+			      if (pt_bin == "300to400") input_histo->Rebin(4); // 10 bins
+			      if (pt_bin == "400to600") input_histo->Rebin(8); // 5 bins
+			      if (pt_bin == "600to1200") input_histo->Rebin(10); // 4 bins
 			      input_histo->SetTitle("BDT response");
 			      TString systSuffix = "";
 			      if(systNames.at(k).EndsWith("_up/"))

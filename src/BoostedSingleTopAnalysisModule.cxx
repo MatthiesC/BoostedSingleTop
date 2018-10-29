@@ -480,19 +480,19 @@ namespace uhh2 {
     // Get MVA plots
     if(sel_1bjetcut_medium->passes(event)) {
       if(sel_toptags_0->passes(event)) {
-	hist_mva_0t1b->fill_(event, mvaD_1b, mva_inputvars, 0.3);
+	hist_mva_0t1b->fill_(event, mvaD_1b, mva_inputvars, 0);
 	return false;
       } else if(sel_toptags_1->passes(event)) {
-	hist_mva_1t1b->fill_(event, mvaD_1b, mva_inputvars, 0.3);
+	hist_mva_1t1b->fill_(event, mvaD_1b, mva_inputvars, (is_ele ? 0.15 : 0.10));
 	//return false;
       }
     }
     else if(sel_2bjetcut_medium->passes(event)) {
       if(sel_toptags_0->passes(event)) {
-	hist_mva_0t2b->fill_(event, mvaD_1b, mva_inputvars, 0.6);
+	hist_mva_0t2b->fill_(event, mvaD_1b, mva_inputvars, 0);
 	return false;
       } else if(sel_toptags_1->passes(event)) {
-	hist_mva_1t2b->fill_(event, mvaD_1b, mva_inputvars, 0.6);
+	hist_mva_1t2b->fill_(event, mvaD_1b, mva_inputvars, (is_ele ? 0.35 : 0.30));
 	return false;
       }
     }

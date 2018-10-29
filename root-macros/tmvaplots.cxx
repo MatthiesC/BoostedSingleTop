@@ -128,7 +128,7 @@ void plotInputVariables (TString filepath, TString nbtags) {
 }
 
 
-void plotSignificance(TString channel, TString nbtags) {
+double plotSignificance(TString channel, TString nbtags) {
 
   TH1F* eff_s = new TH1F("eff_s", "", 41, -1.025, 1.025);
   TH1F* eff_b = new TH1F("eff_b", "", 41, -1.025, 1.025);
@@ -194,18 +194,20 @@ void plotSignificance(TString channel, TString nbtags) {
   p1->cd();
   p1->SetTicks(1,1);
 
-  eff_s->Draw("c hist");
-  eff_b->Draw("c hist same");
+  eff_s->Draw("l hist");
+  eff_b->Draw("l hist same");
   eff_s->SetMinimum(0.01);
   eff_s->SetMaximum(1);
   eff_s->GetYaxis()->SetNdivisions(406);
 
   eff_s->SetLineColor(597);
   eff_s->SetLineWidth(2);
+  eff_s->SetMarkerSize(0);
   eff_b->SetLineColor(810);
   eff_b->SetLineWidth(2);
   eff_b->SetLineStyle(2);
-
+  eff_b->SetMarkerSize(0);
+ 
   eff_s->GetXaxis()->SetTitle("Cut value applied on BDT response");
   eff_s->GetYaxis()->SetTitle("Efficiency");
   eff_s->GetYaxis()->SetTitleSize(.1*2*(.5+offset));
@@ -290,8 +292,75 @@ void plotSignificance(TString channel, TString nbtags) {
   TMarker *marker = new TMarker(ssb->GetBinCenter(ssb_max_i),ssb->GetBinContent(ssb_max_i),8);
   marker->Draw();
 
+  p1->cd();
+
+  auto legend = new TLegend(0.63,0.55,0.9,0.85);
+  legend->AddEntry(eff_s, "signal (tW)");
+  legend->AddEntry(eff_b, "all bkgs.");
+  legend->Draw();
+  legend->SetBorderSize(0);
+  legend->SetTextSize(.08*2*(.5+offset)); // .1 as first factor is standard for all other texts in this plot
 
   c->SaveAs("plots/tmva_"+channel+"_"+nbtags+"__OptimalCutValue.eps");
+
+
+  return ssb->GetBinCenter(ssb_max_i);
+}
+
+
+void Pal1()
+{
+   static Int_t  colors[50];
+   static Bool_t initialized = kFALSE;
+   Double_t Red[3]    = { 0.00, 0.00, 1.00};
+   Double_t Green[3]  = { 0.00, 0.00, 0.00};
+   Double_t Blue[3]   = { 1.00, 0.00, 0.00};
+   Double_t Length[3] = { 0.00, 0.50, 1.00 };
+   if(!initialized){
+      Int_t FI = TColor::CreateGradientColorTable(3,Length,Red,Green,Blue,50);
+      for (int i=0; i<50; i++) colors[i] = FI+i;
+      initialized = kTRUE;
+      return;
+   }
+   gStyle->SetPalette(50,colors);
+}
+
+
+void linearCorrelations(TString filepath, TString nbtags) {
+   
+  TFile* rootfile = TFile::Open(filepath, "READ");
+  TH1F* hist_sig = (TH1F*)rootfile->Get("CorrelationMatrixS");
+  TH1F* hist_bkg = (TH1F*)rootfile->Get("CorrelationMatrixB");
+  //rootfile->Close();
+
+  TString SB = "S";
+
+  for(auto hist : {hist_sig, hist_bkg}) {
+
+    TCanvas* c = new TCanvas("c","",700,500);
+
+    c->cd();
+
+    TPad* p = new TPad("p","",0,0,1,1);
+    p->SetMargin(.1*7/5,.1*7/5,.12,.02);
+    p->Draw();
+    p->SetTicks(1,1);
+    p->cd();
+
+    //Pal1();
+    gStyle->SetPalette(kTemperatureMap);
+
+    hist->SetTitle("");
+    hist->Draw("colz text");
+
+    hist->SetMarkerColor(kBlack);
+
+    c->SaveAs("plots/tmva_"+nbtags+"__LinearCorrelationMatrix"+SB+".eps");
+
+    SB = "B";
+  }
+
+  //rootfile->Close();
 
 }
 
@@ -303,8 +372,10 @@ void tmvaplots() {
   for (auto nbtags : {"1b", "2b"}) {
     TString filepath = tmvafolder+"TMVAOutput_"+nbtags+".root";
     //plotInputVariables(filepath,nbtags);
-    for (auto channel : {"Electron", "Muon"}) {
-      plotSignificance(channel,nbtags);
-    }
+    /*for (auto channel : {"Electron", "Muon"}) {
+      double optimalCut = plotSignificance(channel,nbtags);
+      cout << "Optimal BDT cut: " << optimalCut << endl;
+      }*/
+    linearCorrelations(filepath,nbtags);
   }
 }

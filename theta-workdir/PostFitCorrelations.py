@@ -44,17 +44,20 @@ def PlotPostFitCorrelations(model, dictIn, outputName):
 
     for i in range(0,Nbins):
         for j in range(0,Nbins):
-            h_corr.SetBinContent(i+1,j+1, cov[i][j]/math.sqrt(cov[i][i])/math.sqrt(cov[j][j]))
+            content = 100*cov[i][j]/math.sqrt(cov[i][i])/math.sqrt(cov[j][j])
+            if abs(content) < 0.5 : content = 0
+            h_corr.SetBinContent(i+1,j+1, content)
 
     #histogram settings
-    Red = array('d', [0.00, 1.00, 0.90])
-    Green = array('d', [0.90, 1.00, 0.20])
-    Blue = array('d', [ 0.00, 1.00, 0.20])
-    Length = array('d', [0.00, 0.50, 1.00])
+    #Red = array('d', [0.00, 1.00, 0.90])
+    #Green = array('d', [0.90, 1.00, 0.20])
+    #Blue = array('d', [ 0.00, 1.00, 0.20])
+    #Length = array('d', [0.00, 0.50, 1.00])
 
-    ROOT.TColor.CreateGradientColorTable(3,Length,Red,Green,Blue,50);
+    #ROOT.TColor.CreateGradientColorTable(3,Length,Red,Green,Blue,50);
+    ROOT.gStyle.SetPalette(104) #kTemperatureMap)
 
-    ROOT.gStyle.SetPaintTextFormat("4.2f")
+    ROOT.gStyle.SetPaintTextFormat("3.0f")#"4.2f")
     ROOT.gStyle.SetOptStat(0)
     #h_corr.SetPaintTextFormat("4.2f");
     xAxis = h_corr.GetXaxis()
@@ -62,16 +65,16 @@ def PlotPostFitCorrelations(model, dictIn, outputName):
     for i in range(0,Nbins):
         xAxis.SetBinLabel(i+1,lables[i])
         yAxis.SetBinLabel(i+1,lables[i])
-    h_corr.SetMaximum(1.)
-    h_corr.SetMinimum(-1.)
+    h_corr.SetMaximum(100.)
+    h_corr.SetMinimum(-100.)
     h_corr.SetMarkerSize(0.6)
     h_corr.GetXaxis().SetLabelSize(0.015)
     h_corr.GetYaxis().SetLabelSize(0.02)
     can = ROOT.TCanvas()
     xAxis.SetTicks("")
     yAxis.SetTicks("")
-    can.SetTickx(0)
-    can.SetTicky(0)
+    can.SetTickx(1)
+    can.SetTicky(1)
     #can.SetRightMargin(0.2)
     can.SetLeftMargin(0.2)
 
