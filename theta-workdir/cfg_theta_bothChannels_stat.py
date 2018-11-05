@@ -86,7 +86,7 @@ def run(fname_stat, outname_stat, write_report = False):
     #print mle_output_stat
     #report.write_html('htmlout')
     
-    PlotPostFitCorrelations(model_stat, mle_output_stat['background_only'], "fitResults/nuisance/Corr_"+n_name_stat)  
+    PlotPostFitCorrelations(model_stat, mle_output_stat['background_only'], "fitResults_stat/nuisance/Corr_"+n_name_stat)  
     writeOutputFile(inputpath+fname_stat, inputpath+outname_stat, mle_output_stat['background_only'], model_stat)
 
     for pf_vals in mle_output_stat.itervalues():
@@ -94,7 +94,7 @@ def run(fname_stat, outname_stat, write_report = False):
         del pf_vals['__cov']
 
     postfit_stat = ThetaPostFitPlot(mle_output_stat)
-    postfit_stat.make_plots("fitResults/nuisance/",n_name_stat)
+    postfit_stat.make_plots("fitResults_stat/nuisance/",n_name_stat)
 
     #Use this instead of Torben's "writeOutputFile" if you want to have wrong uncertainties: ;-)
     #parameter_values = {}
@@ -117,4 +117,4 @@ for c in channels:
     for p in ptbins:
         for nb in nbtags:
             name = c+"_"+nb+"_"+p
-            run("theta-input_"+name+".root", "theta-output_"+name+".root")
+            run("theta-input_"+name+".root", "theta-output_"+name+"_stat.root")

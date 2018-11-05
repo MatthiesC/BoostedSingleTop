@@ -145,7 +145,7 @@ vector<double> recoEfficiency(TString channel, TString n_btags) {
   hist_eff->SetLineStyle(1);
 
   hist_eff->SetLineColor(kBlack);
-  hist_eff->GetXaxis()->SetTitle("top-quark or top-jet p_{T} [GeV]");
+  hist_eff->GetXaxis()->SetTitle("top quark (or jet) p_{T} [GeV]");
   hist_eff->GetYaxis()->SetTitle("Correction factor");
   hist_eff->GetYaxis()->CenterTitle();
   hist_eff->GetYaxis()->SetTitleSize(0.05/(1-splitter));
@@ -173,11 +173,19 @@ double calcUncertainty(double mean, double mean_data, vector<double> variations,
 
   double uncertainty = pow(0.025*mean,2); // lumi unc.
   //uncertainty += mean; // stat. unc. of real data
-  for (auto var : variations) {
+
+  /*for (auto var : variations) {
     uncertainty += pow(mean-var,2);
+    }*/
+
+  for (int i = 0; i < variations.size(); i++) {
+    if(bStatOnly && i == 0) continue;
+    uncertainty += pow(mean-variations.at(i),2);
   }
+
   uncertainty = sqrt(uncertainty);
-  if(bStatOnly) uncertainty = abs(mean-variations.at(0));
+
+  //if(bStatOnly) uncertainty = abs(mean-variations.at(0));
 
   return uncertainty;
 }
@@ -269,7 +277,7 @@ void makeFinalPlots(TString channel, TString n_btags, vector<double> datapoints,
 
   hist_gen->Draw("hist");
   hist_gen->SetTitle("");
-  hist_gen->GetXaxis()->SetTitle("top-quark p_{T} [GeV]");
+  hist_gen->GetXaxis()->SetTitle("top quark p_{T} [GeV]");
   hist_gen->GetYaxis()->SetTitle("d#sigma/dp_{T} #scale[0.7]{#left[#frac{pb}{100 GeV}#right]}");
   hist_gen->SetLineColor(597);
   hist_gen->SetLineStyle(2);
@@ -414,8 +422,8 @@ void makeFinalPlots(TString channel, TString n_btags, vector<double> datapoints,
   //hist_ratio->SetLineStyle(1);
 
   //hist_ratio->SetLineColor(kBlack);
-  hist_ratio->GetXaxis()->SetTitle("top-quark p_{T} [GeV]");
-  hist_ratio->GetYaxis()->SetTitle("Data / MC");
+  hist_ratio->GetXaxis()->SetTitle("top quark p_{T} [GeV]");
+  hist_ratio->GetYaxis()->SetTitle("Data / Prediction");
   hist_ratio->GetYaxis()->CenterTitle();
   hist_ratio->GetYaxis()->SetTitleSize(0.05/(1-splitter));
   hist_ratio->GetXaxis()->SetTitleSize(0.05/(1-splitter));

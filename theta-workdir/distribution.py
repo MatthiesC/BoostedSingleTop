@@ -35,6 +35,8 @@ class distribution(object):
         self.cov_stat.Scale(scale**2)
         for key in self.d_cov_sys:
             self.d_cov_sys[key].Scale(scale**2)
+        for key in self.d_shift_sys:
+            self.d_shift_sys[key].Scale(scale)
 
         d_shift = {name: h_shift,}
         self.d_shift_sys.update(d_shift)
@@ -159,6 +161,9 @@ class distribution(object):
         OutFile.cd()
         self.distr.Write(self.name)
          
+        #for sys_shift in self.d_shift_sys:
+         #   self.d_shift_sys[sys_shift].Write("SYS_"+self.name+"__"+sys_shift+"__plus")
+
         for key in self.d_cov_sys:
             
             h_shift = self.distr.Clone("h_shift")
@@ -167,12 +172,18 @@ class distribution(object):
             for bin in range(1,h_shift.GetNbinsX()+1):
                 h_shift.SetBinContent(bin, math.sqrt(self.d_cov_sys[key].GetBinContent(bin,bin)))
                 
+            # for sys_shift in self.d_shift_sys:
+            sys_shift = self.d_shift_sys[key]
+                
             h_up = self.distr.Clone("h_up")
-            h_up.Add(h_shift)
+            h_up.Add(sys_shift)
+
+            #h_up2 = self.distr.Clone("h_up2")
+            #h_up2.Add(sys_shift)
             
             h_down = self.distr.Clone("h_down")
-            h_down.Add(h_shift,-1)
+            h_down.Add(sys_shift,-1)
         
             h_up.Write(self.name+'__'+key+'__plus')
+            #h_up2.Write(self.name+'__'+key+'__plus_test')
             h_down.Write(self.name+'__'+key+'__minus')
-  
