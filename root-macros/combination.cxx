@@ -1,6 +1,8 @@
 vector< vector<double> > calcCorrFactors(TString channel, TString nbtags) {
 
+  cout << "==========================================" << endl;
   cout << "Calculate correction factors for: " << channel << " " << nbtags << endl;
+  cout << "==========================================" << endl;
 
   // Get the gen and reco hists:
 
@@ -146,6 +148,14 @@ vector< vector<double> > readDataPoints(TString channel, TString nbtags, vector<
       //cout << abs(mean-values.at(1)) << endl;
     }
 
+    // further uncertainties (up and down):
+    //// lumi:
+    result.push_back(mean*0.025);
+    result.push_back(mean*0.025);
+    //// lepton SF:
+    result.push_back(mean*0.020);
+    result.push_back(mean*0.020);
+
     resultAllFourBins.push_back(result);
   }
 
@@ -153,13 +163,49 @@ vector< vector<double> > readDataPoints(TString channel, TString nbtags, vector<
 }
 
 
-vector< vector<double> > calcCrossSections(vector< vector<double> > dataPoints, vector< vector<double> > corrFactors, vector<TString> uncertaintiesText) {
+void printCrossSections(vector< vector<double> > result) {
+
+  vector<TString> uncertaintiesText = {"tW rate:   ",
+				       "b-mistag:  ",
+				       "b-tag SF:  ",
+				       "JEC:       ",
+				       "JER:       ",
+				       "Pile-up:   ",
+				       "Lumi:      ",
+				       "Lepton SF: "};
+
+  cout << endl;
+  cout << "Xsection values: " << endl;
+  for (int i = 0; i < result.size(); i++) {
+    double mean = result.at(i).at(0);
+    cout << endl;
+    cout << "Mean: " << mean << endl;
+    cout << "Uncertainties: " << endl;
+    double totalunc = 0;
+    double systunc = 0;
+    for (int j = 1; j < result.at(i).size(); j=j+2) {
+      cout << uncertaintiesText.at(j/2);
+      cout << "+ " << result.at(i).at(j);
+      cout << " ( + " << result.at(i).at(j)/mean*100 << " )  " << endl;;
+      //cout << " - " << result.at(i).at(j+1);
+      //cout << " ( - " << result.at(i).at(j+1)/mean*100 << " )  " << endl;
+      totalunc += pow(result.at(i).at(j),2);
+      if(j > 2) systunc += pow(result.at(i).at(j),2);
+    }
+    cout << "=== Total Unc:    +/- " << sqrt(totalunc);
+    cout << " ( +/- " << sqrt(totalunc)/mean*100 << " ) " << endl;
+    cout << "=== Syst. Unc:    +/- " << sqrt(systunc);
+    cout << " ( +/- " << sqrt(systunc)/mean*100 << " ) " << endl;
+  }
+}
+
+
+vector< vector<double> > calcCrossSections(vector< vector<double> > dataPoints, vector< vector<double> > corrFactors) {
   
-  double luminosity = 35867;
+  double luminosity = 35.867; // fb-1
 
   auto result = dataPoints;
 
-  cout << "Xsection values: " << endl;
   for (int i = 0; i < dataPoints.size(); i++) {
     for (int j = 0; j < dataPoints.at(i).size(); j++) {
       result.at(i).at(j) = result.at(i).at(j)/corrFactors.at(0).at(i);
@@ -167,17 +213,63 @@ vector< vector<double> > calcCrossSections(vector< vector<double> > dataPoints, 
       if (i == 2) result.at(i).at(j) = result.at(i).at(j)/2.; // 400to600 bin
       if (i == 3) result.at(i).at(j) = result.at(i).at(j)/6.; // 600to1200 bin
     }
-    double mean = result.at(i).at(0);
-    cout << "Mean: " << mean << endl;
-    cout << "Uncertainties: " << endl;
-    for (int j = 1; j < dataPoints.at(i).size(); j=j+2) {
-      cout << uncertaintiesText.at(j/2);
-      cout << "+ " << result.at(i).at(j);
-      cout << " ( + " << result.at(i).at(j)/mean*100 << " )  ";
-      cout << " - " << result.at(i).at(j+1);
-      cout << " ( - " << result.at(i).at(j+1)/mean*100 << " )  " << endl;;
+  }
+
+  printCrossSections(result);
+
+  return result;
+}
+
+
+vector< vector<double> > calcCombCrossSections(vector< vector< vector<double> > > vecCrossSections) {
+
+  auto result = vecCrossSections.at(0); // copy "1b" datapoints to have a template for the "result" vector
+
+  int weight_power = 2; // maybe 2 instead?
+
+  for (int i = 0; i < 4; i++) {
+    double totalUnc1b = 0;
+    double totalUnc2b = 0;
+    for (int j = 1; j < result.at(i).size(); j=j+2) { // use only the up variations to calculate the total uncertainty for the following weighted averaging
+      totalUnc1b += pow(vecCrossSections.at(0).at(i).at(j),2);
+      totalUnc2b += pow(vecCrossSections.at(1).at(i).at(j),2);
+    }
+    totalUnc1b = sqrt(totalUnc1b);
+    totalUnc2b = sqrt(totalUnc2b);
+    // calculate the weighted mean:
+    result.at(i).at(0) = (vecCrossSections.at(0).at(i).at(0)/pow(totalUnc1b,weight_power)+vecCrossSections.at(1).at(i).at(0)/pow(totalUnc2b,weight_power))/(1/pow(totalUnc1b,weight_power)+1/pow(totalUnc2b,weight_power));
+    // calculate the harmonic mean variances:
+    for (int j = 1; j < result.at(i).size(); j++) {
+      int power = 1;
+      bool bStat = (j == 1 || j == 2);
+      if (bStat) power = 2;
+      result.at(i).at(j) = (pow(vecCrossSections.at(0).at(i).at(j),power)/pow(totalUnc1b,weight_power)+pow(vecCrossSections.at(1).at(i).at(j),power)/pow(totalUnc2b,weight_power))/(1/pow(totalUnc1b,weight_power)+1/pow(totalUnc2b,weight_power));
+      if (bStat) result.at(i).at(j) = sqrt(result.at(i).at(j));
     }
   }
+
+  printCrossSections(result);
+
+  return result;
+}
+
+
+vector< vector<double> > calcLeptonCombination(vector< vector< vector<double> > > vecCombCrossSections) {
+
+  auto result = vecCombCrossSections.at(0); // copy "Electron" datapoints to have a template for the "result" vector
+
+  for (int i = 0; i < 4; i++) {
+    result.at(i).at(0) = vecCombCrossSections.at(0).at(i).at(0) + vecCombCrossSections.at(1).at(i).at(0);
+    for (int j = 1; j < 3; j++) {
+      result.at(i).at(j) = pow(vecCombCrossSections.at(0).at(i).at(j),2) + pow(vecCombCrossSections.at(1).at(i).at(j),2);
+      result.at(i).at(j) = sqrt(result.at(i).at(j));
+    }
+    for (int j = 3; j < result.at(i).size(); j++) {
+      result.at(i).at(j) = vecCombCrossSections.at(0).at(i).at(j) + vecCombCrossSections.at(1).at(i).at(j);
+    }
+  }
+
+  printCrossSections(result);
 
   return result;
 }
@@ -187,23 +279,35 @@ void combination() {
 
   cout << "Everything is happy." << endl;
 
-  vector<TString> uncertainties = {"SingleTop_tWch_rate", "btagSFudsg", "btagSFbc", "jec", "jer", "pileup"};
-  vector<TString> uncertaintiesText = {"tW rate:   ",
-				       "b-mistag:  ",
-				       "b-tag SF:  ",
-				       "JEC:       ",
-				       "JER:       ",
-				       "Pile-up:   "};
+  // uncertainties which are constrained by THETA:
 
+  vector<TString> uncertainties = {"SingleTop_tWch_rate", "btagSFudsg", "btagSFbc", "jec", "jer", "pileup"};
+
+  // the rate uncertainty of tW is interpreted as statistical uncertainty of the measurement
+
+  vector< vector< vector<double> > > vecCombCrossSections;
   vector< vector< vector<double> > > vecCorrFactors;
   for (TString channel : {"Electron", "Muon"}) {
+    vector< vector< vector<double> > > vecCrossSections;
     for (TString nbtags : {"1b", "2b"}) {
       auto corrFactors = calcCorrFactors(channel, nbtags);
       vecCorrFactors.push_back(corrFactors);
       auto dataPoints = readDataPoints(channel, nbtags, uncertainties);
-      auto crossSections = calcCrossSections(dataPoints, corrFactors, uncertaintiesText);
+      auto crossSections = calcCrossSections(dataPoints, corrFactors);
+      vecCrossSections.push_back(crossSections);
     }
+    cout << endl;
+    cout << "========================" << endl;
+    cout << channel << " Combination:" << endl;
+    cout << "========================" << endl;
+    auto combCrossSections = calcCombCrossSections(vecCrossSections);
+    vecCombCrossSections.push_back(combCrossSections);
   }
   plotCorrFactors(vecCorrFactors);
+  cout << endl;
+  cout << "========================" << endl;
+  cout << "Lepton e/mu Combination:" << endl;
+  cout << "========================" << endl;
+  auto leptonCombination = calcLeptonCombination(vecCombCrossSections);
 
 }
