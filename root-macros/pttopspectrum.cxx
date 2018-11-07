@@ -5,6 +5,8 @@ void pttopspectrum() {
    
   bool bNormalized = false;
 
+  double offset = 0.05;
+
   TString input_path = "/nfs/dust/cms/user/matthies/BoostedSingleTop/RunII_80X_v5/Generator/SingleTop/";
   std::cout << "Make sure to already have run SFramePlotter over the input files to have the hadded ones." << std::endl;
   std::vector<TFile*> input_files;
@@ -24,8 +26,14 @@ void pttopspectrum() {
 
   TCanvas* c = new TCanvas("c","",600,600);
 
+  TPad* p = new TPad("p","",0,0,1,1);
+  p->SetMargin(0.15,0.1,0.15,0.1);
+  p->Draw();
+  p->SetTicks(1,1);
+  p->cd();
+
   gStyle->SetOptStat(kFALSE);
-  c->SetLogy();
+  p->SetLogy();
   
   THStack *hs = new THStack("hs","");
   THStack *hs2 = new THStack("hs2","");
@@ -60,27 +68,31 @@ void pttopspectrum() {
 
   //gStyle->SetPalette(kOcean);
   hs->GetYaxis()->SetTitle((!bNormalized ? "Events" : "#DeltaN/N"));
-  hs->GetYaxis()->SetTitleOffset(1.4);
-  hs->GetXaxis()->SetTitle("top-quark p_{T} [GeV]");
+  hs->GetYaxis()->SetTitleOffset(1.6);
+  hs->GetXaxis()->SetLabelSize(0.05);
+  hs->GetXaxis()->SetTitleSize(0.05);
+  hs->GetYaxis()->SetLabelSize(0.05);
+  hs->GetYaxis()->SetTitleSize(0.05);
+  hs->GetXaxis()->SetTitle("top quark p_{T} [GeV]");
   hs->GetXaxis()->SetTitleOffset(1.4);
   hs->SetMinimum(0.4);
   if(bNormalized) hs->SetMinimum(0.4e-7);
+  hs->GetXaxis()->SetNdivisions(806);
 
+  //c->cd();
 
-  c->cd();
-
-  TText *simulation = new TText(.1,.91,"Simulation");
+  TText *simulation = new TText(.15,.92,"Simulation");
   simulation->SetNDC();
   //simulation->SetTextAlign(12);
   simulation->SetTextFont(73);
-  simulation->SetTextSize(24);
+  simulation->SetTextSize(28);
   simulation->Draw();
 
-  TLatex *lumi = new TLatex(.9,.91,"35.9 fb^{-1} (13 TeV)");
+  TLatex *lumi = new TLatex(.9,.92,"35.9 fb^{-1} (13 TeV)");
   lumi->SetNDC();
   lumi->SetTextAlign(31);
   lumi->SetTextFont(43);
-  lumi->SetTextSize(24);
+  lumi->SetTextSize(28);
   lumi->Draw();
 
   auto legend = new TLegend(0.65,0.65,0.85,0.85);
