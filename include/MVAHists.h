@@ -39,6 +39,7 @@ namespace uhh2 {
     TH1F* H_nocuts_top_eta_rebin;
     TH2F* H_nocuts_top_pt_vs_eta_1000;
     TH2F* H_nocuts_top_pt_vs_eta_rebin;
+    TH1F* H_nocuts_top_mass;
 
     TH1F* H_nocuts_tmva_n_btags;
     TH1F* H_nocuts_tmva_deltaPhi_leptonbottom;
@@ -58,6 +59,7 @@ namespace uhh2 {
     TH1F* H_BDTcut_top_eta_rebin;
     TH2F* H_BDTcut_top_pt_vs_eta_1000;
     TH2F* H_BDTcut_top_pt_vs_eta_rebin;
+    TH1F* H_BDTcut_top_mass;
 
     TH1F* H_BDTcut_tmva_n_btags;
     TH1F* H_BDTcut_tmva_deltaPhi_leptonbottom;

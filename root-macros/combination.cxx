@@ -32,7 +32,7 @@ vector< vector<double> > calcCorrFactors(TString channel, TString nbtags) {
     gen_err = hist_gen->GetBinError(i+1);
     cout << rec/gen << endl;
     result_meanv.push_back(rec/gen);
-    result_error.push_back(rec/gen*sqrt(rec_err*rec_err/(rec*rec)+gen_err*gen_err/(gen*gen)));
+    result_error.push_back(rec/gen*sqrt(rec_err*rec_err/(rec*rec)+gen_err*gen_err/(gen*gen)+2*gen_err*rec_err/(rec*gen))); // assume 100% covariance since it is both the same MC sample!
   }
 
   result.push_back(result_meanv); // corrFactors.at(0).at(i) --> the corr factors!
@@ -354,7 +354,7 @@ void plotCrossSections(vector< vector<double> > crossSections, TString channel, 
 
   h_totl->Draw("e2");
   h_syst->Draw("same e2");
-  h_pred->Draw("same");
+  h_pred->Draw("same e1");
 
   TLegend* l = new TLegend(0.5,0.45,0.85,0.77);
 
@@ -378,8 +378,8 @@ void plotCrossSections(vector< vector<double> > crossSections, TString channel, 
   }
 
   h_totl->SetMaximum(h_pred->GetBinContent(1)*10);
-  h_syst->SetFillColor(kGray);
-  h_totl->SetFillColor(kGray+1);
+  h_syst->SetFillColor(kYellow-4); //kGray
+  h_totl->SetFillColor(kOrange-3); //kGray+1
   h_syst->SetLineColor(kBlack);
   h_totl->SetLineColor(kBlack);
   h_syst->SetLineWidth(0);
@@ -422,7 +422,7 @@ void plotCrossSections(vector< vector<double> > crossSections, TString channel, 
 
   h_totl_norm->Draw("e2");
   h_syst_norm->Draw("same e2");
-  h_pred_ratio->Draw("same");
+  h_pred_ratio->Draw("same e1");
 
   h_totl_norm->SetMinimum(0.3);
   h_totl_norm->SetNdivisions(505);

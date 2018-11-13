@@ -484,7 +484,7 @@ namespace uhh2 {
 	return false;
       } else if(sel_toptags_1->passes(event)) {
 	hist_mva_1t1b->fill_(event, mvaD_1b, mva_inputvars, (is_ele ? 0.15 : 0.10));
-	//return false;
+	return false;
       }
     }
     else if(sel_2bjetcut_medium->passes(event)) {
@@ -493,7 +493,7 @@ namespace uhh2 {
 	return false;
       } else if(sel_toptags_1->passes(event)) {
 	hist_mva_1t2b->fill_(event, mvaD_1b, mva_inputvars, (is_ele ? 0.35 : 0.30));
-	return false;
+	//return false;
       }
     }
 

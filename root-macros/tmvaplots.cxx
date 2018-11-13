@@ -365,17 +365,222 @@ void linearCorrelations(TString filepath, TString nbtags) {
 }
 
 
+void ROCcurves(TString tmvafolder) {
+
+  TFile* file_1b = TFile::Open(tmvafolder+"TMVAOutput_1b.root", "READ");
+  TFile* file_2b = TFile::Open(tmvafolder+"TMVAOutput_2b.root", "READ");
+
+  TH1F* hist_1b = (TH1F*)file_1b->Get("Method_BDT/BDT/MVA_BDT_rejBvsS");
+  TH1F* hist_2b = (TH1F*)file_2b->Get("Method_BDT/BDT/MVA_BDT_rejBvsS");
+
+  TCanvas* c = new TCanvas("roc","",600,600);
+
+  TPad* p = new TPad("proc","",0,0,1,1);
+  p->SetMargin(0.15,0.05,0.15,0.05);
+  p->SetTicks(1,1);
+  p->SetGrid();
+  p->Draw();
+  p->cd();
+  gStyle->SetOptStat(0);
+
+  for (auto h : {hist_1b,hist_2b}) {
+    h->SetTitle("");
+    h->GetXaxis()->SetTitle("Signal efficiency");
+    h->GetXaxis()->SetTitleSize(0.05);
+    h->GetXaxis()->SetLabelSize(0.05);
+    h->GetXaxis()->SetTitleOffset(1.4);
+    h->GetXaxis()->SetNdivisions(406);
+    h->GetYaxis()->SetTitle("Background rejection");
+    h->GetYaxis()->SetTitleSize(0.05);
+    h->GetYaxis()->SetLabelSize(0.05);
+    h->GetYaxis()->SetTitleOffset(1.6);
+    h->GetYaxis()->SetNdivisions(406);
+    h->SetMaximum(1);
+    h->SetMinimum(0);
+    h->SetLineWidth(2);
+  }
+
+  hist_1b->SetLineColor(kRed);
+  hist_2b->SetLineColor(kBlue);
+  hist_2b->SetLineStyle(9);
+
+  hist_1b->Draw("l");
+  hist_2b->Draw("l same");
+
+  TLine* line = new TLine(0,1,1,0);
+  line->SetLineStyle(2);
+  line->Draw();
+
+  TText* text = new TText(.48,.48,"random guess");
+  text->SetTextAngle(-45);
+  text->SetTextAlign(22);
+  text->SetTextFont(42);
+  text->SetTextSize(0.04);
+  text->Draw();
+
+  TLegend* l = new TLegend(0.2,0.2,0.62,0.38);
+  l->AddEntry(hist_1b,"BDT (1t1b)");
+  l->AddEntry(hist_2b,"BDT (1t2b+)");
+  l->SetTextSize(.05);
+  l->Draw();
+
+
+  c->cd();
+  c->SaveAs("plots/tmva_roc.eps");
+
+  //file_1b->Close();
+  //file_2b->Close();
+}
+
+
+// https://root-forum.cern.ch/t/how-does-tmva-calculate-the-kolmogorov-probability/27787/3
+double ks_test(TFile *f, bool bSignal) {
+  TTreeReader trainReader((TTree*)f->Get("TrainTree"));
+  TTreeReader testReader((TTree*)f->Get("TestTree"));
+
+  const string method = "BDT";
+  auto fill = [&method](TTreeReader &reader, vector<Double_t> &values,
+                        bool signal) {
+    TTreeReaderValue<Float_t> classifier(reader, "BDT");
+    TTreeReaderValue<Int_t> type(reader, "classID");
+    while (reader.Next()) {
+      if (signal ? *type == 0 : *type != 0) {
+        values.push_back(static_cast<Double_t>(*classifier));
+      }
+    }
+    sort(values.begin(), values.end());
+    //reader.Restart();
+  };
+  vector<Double_t> test, train;
+  fill(testReader, test, bSignal);
+  fill(trainReader, train, bSignal);
+
+  /*  cout << " * TMath::KolmogorovTest(<default options>): "
+       << TMath::KolmogorovTest(test.size(), &test[0], train.size(), &train[0],"")
+       << endl;*/
+
+  return TMath::KolmogorovTest(test.size(), &test[0], train.size(), &train[0],"");
+}
+
+
+void trainingResults(TString filepath, TString nbtags) {
+
+  TFile* rootfile = TFile::Open(filepath, "READ");
+
+  TString histpath = "Method_BDT/BDT/";
+
+  TH1F* h_train_s = (TH1F*)rootfile->Get(histpath+"MVA_BDT_Train_S");
+  TH1F* h_test_s = (TH1F*)rootfile->Get(histpath+"MVA_BDT_S");
+  TH1F* h_train_b = (TH1F*)rootfile->Get(histpath+"MVA_BDT_Train_B");
+  TH1F* h_test_b = (TH1F*)rootfile->Get(histpath+"MVA_BDT_B");
+
+  int cwidth = 800;
+  int cheight = 600;
+  double cratio = (double)cwidth/(double)cheight;
+
+  TString canvasName = "c"+nbtags;
+
+  TCanvas* c = new TCanvas(canvasName,"",cwidth,cheight);
+
+  TPad* p = new TPad("p","",0,0,1,1);
+  p->SetMargin(0.15/cratio,0.05/cratio,0.15,0.08);
+  p->SetTicks(1,1);
+  p->Draw();
+  p->cd();
+  gStyle->SetOptStat(0);
+
+  double maximum = 0;
+  double integral = 0;
+
+  for (auto h : {h_train_s,h_test_s,h_train_b,h_test_b}) {
+    integral = h->Integral();
+    h->Scale(1/integral);
+    if (h->GetMaximum() > maximum) maximum = h->GetMaximum();
+    h->SetTitle("");
+    h->GetXaxis()->SetTitle("BDT response");
+    h->GetXaxis()->SetTitleSize(0.05);
+    h->GetXaxis()->SetLabelSize(0.05);
+    h->GetXaxis()->SetTitleOffset(1.4);
+    //h->GetXaxis()->SetNdivisions(406);
+    h->GetYaxis()->SetTitle("#DeltaN/N");
+    h->GetYaxis()->SetTitleSize(0.05);
+    h->GetYaxis()->SetLabelSize(0.05);
+    h->GetYaxis()->SetTitleOffset(1.6/cratio);
+    //h->GetYaxis()->SetNdivisions(406);
+    //h->SetMaximum(1);
+    h->SetMinimum(0);
+  }
+  h_train_s->SetMaximum(maximum*1.5);
+
+  h_train_s->SetFillColor(kBlue-9);
+  h_train_s->SetLineColor(597);
+  //h_train_s->SetFillStyle(1);
+  h_train_b->SetFillColor(810);
+  h_train_b->SetLineColor(810);
+  h_train_b->SetFillStyle(3004);
+
+  h_test_s->SetLineColor(597);
+  h_test_s->SetMarkerStyle(8);
+  h_test_s->SetMarkerSize(.9);
+  h_test_s->SetMarkerColor(597);
+  h_test_b->SetLineColor(810);
+  h_test_b->SetMarkerStyle(8);
+  h_test_b->SetMarkerSize(.9);
+  h_test_b->SetMarkerColor(810);
+
+  //cout << h_train_s->KolmogorovTest(h_test_s) << endl;
+  //cout << h_train_s->KolmogorovTest(h_test_s) << endl;
+  //cout << "KS signal: " << ks_test(rootfile,true) << endl;
+  //cout << "KS backgr: " << ks_test(rootfile,false) << endl;
+
+  h_train_s->Draw("hist");
+  h_train_b->Draw("hist same");
+  h_test_s->Draw("same");
+  h_test_b->Draw("same");
+
+  TLegend* ls = new TLegend(0.15/cratio+0.05/cratio,0.72,0.5+0.05/cratio,0.9-0.03);//1-(0.05/cratio)-0.05/cratio,);
+  ls->SetHeader((TString)("Signal (tW), KS = "+((TString)(to_string(round(ks_test(rootfile,true)*1000.)/1000.)))(0,5)));
+  ls->AddEntry(h_train_s,"Training sample");
+  ls->AddEntry(h_test_s,"Test sample");
+  ls->SetTextSize(.04);
+  ls->SetBorderSize(0);
+  ls->Draw();
+
+  TLegend* lb = new TLegend(0.5+0.05/cratio,0.72,1-(0.05/cratio)-0.05/cratio,0.9-0.03);
+  lb->SetHeader((TString)("Background (t#bar{t}), KS = "+((TString)(to_string(round(ks_test(rootfile,false)*1000.)/1000.)))(0,5)));
+  lb->AddEntry(h_train_b,"Training sample");
+  lb->AddEntry(h_test_b,"Test sample");
+  lb->SetTextSize(.04);
+  lb->SetBorderSize(0);
+  lb->Draw();
+
+  TLatex *category = new TLatex(1-.05/cratio,0.94,(TString)("l+jets 1t"+nbtags+(nbtags == "2b" ? "+" : "")+" category"));
+  category->SetNDC();
+  category->SetTextAlign(31);
+  category->SetTextFont(43);
+  category->SetTextSize(28);
+  category->Draw();
+
+  c->cd();
+  c->SaveAs("plots/tmva_overtrainingCheck_"+nbtags+".eps");
+
+}
+
+
 void tmvaplots() {
 
   TString tmvafolder = "/nfs/dust/cms/user/matthies/Analysis_80x_v5/CMSSW_8_0_24_patch1/src/UHH2/BoostedSingleTop/tmva_comb/";
 
   for (auto nbtags : {"1b", "2b"}) {
+    cout << "Category: " << nbtags << endl;
     TString filepath = tmvafolder+"TMVAOutput_"+nbtags+".root";
-    //plotInputVariables(filepath,nbtags);
-    /*for (auto channel : {"Electron", "Muon"}) {
+    plotInputVariables(filepath,nbtags);
+    for (auto channel : {"Electron", "Muon"}) {
       double optimalCut = plotSignificance(channel,nbtags);
       cout << "Optimal BDT cut: " << optimalCut << endl;
-      }*/
+      }
     linearCorrelations(filepath,nbtags);
+    trainingResults(filepath,nbtags);
   }
+  ROCcurves(tmvafolder);
 }

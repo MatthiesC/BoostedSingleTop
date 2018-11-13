@@ -45,6 +45,7 @@ MVAHists::MVAHists(Context & ctx, const string & dirname):
   H_nocuts_top_eta_rebin = book<TH1F>("nocuts_top_eta_rebin", "top-jet #eta", rebin_eta_bincount, rebin_eta);
   H_nocuts_top_pt_vs_eta_1000 = book<TH2F>("nocuts_top_pt_vs_eta_1000", "top-jet p_{T} [GeV] vs. #eta", 1000, -2.5, 2.5, 1000, 200, 1200);
   H_nocuts_top_pt_vs_eta_rebin = book<TH2F>("nocuts_top_pt_vs_eta_rebin", "top-jet p_{T} [GeV] vs. #eta", rebin_eta_bincount, rebin_eta, rebin_pt_bincount, rebin_pt);
+  H_nocuts_top_mass = book<TH1F>("nocuts_top_mass", "top-jet mass [GeV]", 16, 140, 220);
 
   H_nocuts_tmva_n_btags = book<TH1F>("nocuts_tmva_n_btags", "number of medium CSV b-tags", 6, 0.5, 6.5);
   H_nocuts_tmva_deltaPhi_leptonbottom = book<TH1F>("nocuts_tmva_deltaPhi_leptonbottom", "#Delta#phi(l,b) [rad]", 40, 0, M_PI);
@@ -63,6 +64,7 @@ MVAHists::MVAHists(Context & ctx, const string & dirname):
   H_BDTcut_top_eta_rebin = book<TH1F>("BDTcut_top_eta_rebin", "top-jet #eta", rebin_eta_bincount, rebin_eta);
   H_BDTcut_top_pt_vs_eta_1000 = book<TH2F>("BDTcut_top_pt_vs_eta_1000", "top-jet p_{T} [GeV] vs. #eta", 1000, -2.5, 2.5, 1000, 200, 1200);
   H_BDTcut_top_pt_vs_eta_rebin = book<TH2F>("BDTcut_top_pt_vs_eta_rebin", "top-jet p_{T} [GeV] vs. #eta", rebin_eta_bincount, rebin_eta, rebin_pt_bincount, rebin_pt);
+  H_BDTcut_top_mass = book<TH1F>("BDTcut_top_mass", "top-jet mass [GeV]", 16, 140, 220);
 
   H_BDTcut_tmva_n_btags = book<TH1F>("BDTcut_tmva_n_btags", "number of medium CSV b-tags", 6, 0.5, 6.5);
   H_BDTcut_tmva_deltaPhi_leptonbottom = book<TH1F>("BDTcut_tmva_deltaPhi_leptonbottom", "#Delta#phi(l,b) [rad]", 40, 0, M_PI);
@@ -160,6 +162,7 @@ void MVAHists::fill_(const Event & e, const double & mvaD, const vector<double> 
 
   double top_pt = topjet.v4().pt();
   double top_eta = topjet.v4().eta();
+  double top_mass = topjet.v4().M();
 
   // import tmva's input variables
   /*double tmva_n_btags, tmva_deltaPhi_leptonbottom, tmva_deltaPhi_topbottom, tmva_mass_LepNuB, tmva_pt_balance, tmva_Wass_pt, tmva_lepton_pt, tmva_lepton_eta, tmva_deltaPhi_leptonnextjet, tmva_met_pt;
@@ -190,6 +193,7 @@ void MVAHists::fill_(const Event & e, const double & mvaD, const vector<double> 
   H_nocuts_top_eta_rebin->Fill(top_eta, w);
   H_nocuts_top_pt_vs_eta_1000->Fill(top_eta, top_pt, w);
   H_nocuts_top_pt_vs_eta_rebin->Fill(top_eta, top_pt, w);
+  H_nocuts_top_mass->Fill(top_mass, w);
 
   H_nocuts_tmva_n_btags->Fill(mva_inputvars.at(0), w);
   H_nocuts_tmva_deltaPhi_leptonbottom->Fill(mva_inputvars.at(1), w);
@@ -211,6 +215,7 @@ void MVAHists::fill_(const Event & e, const double & mvaD, const vector<double> 
       H_BDTcut_top_eta_rebin->Fill(top_eta, w);
       H_BDTcut_top_pt_vs_eta_1000->Fill(top_eta, top_pt, w);
       H_BDTcut_top_pt_vs_eta_rebin->Fill(top_eta, top_pt, w);
+      H_BDTcut_top_mass->Fill(top_mass, w);
 
       H_BDTcut_tmva_n_btags->Fill(mva_inputvars.at(0), w);
       H_BDTcut_tmva_deltaPhi_leptonbottom->Fill(mva_inputvars.at(1), w);

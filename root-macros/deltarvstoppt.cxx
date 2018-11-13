@@ -49,7 +49,7 @@ void deltarvstoppt() {
   //TColor::InvertPalette();
   hist->GetYaxis()->SetTitle("max. #DeltaR_{ij} of top-quark decay products");
   hist->GetYaxis()->SetTitleOffset(1.4);
-  hist->GetXaxis()->SetTitle("top-quark p_{T} [GeV]");
+  hist->GetXaxis()->SetTitle("top quark p_{T} [GeV]");
   hist->GetXaxis()->SetTitleOffset(1.4);
 
   hist->Rebin2D(2,2);
