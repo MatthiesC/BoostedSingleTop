@@ -77,6 +77,7 @@ void plotInputVariables (TString filepath, TString nbtags) {
     TPad* p = new TPad("p","pad",.0,0,1,1);
     Double_t margin = 0.1;
     p->SetMargin((60+cx-400)/((double)cx),20/((double)cx),0.18,0.02);
+    p->SetTicks(1,1);
     p->Draw();
     p->cd();
 
@@ -303,6 +304,7 @@ double plotSignificance(TString channel, TString nbtags) {
 
   c->SaveAs("plots/tmva_"+channel+"_"+nbtags+"__OptimalCutValue.eps");
 
+  cout << "Best significance: " << ssb->GetBinContent(ssb_max_i) << endl;
 
   return ssb->GetBinCenter(ssb_max_i);
 }

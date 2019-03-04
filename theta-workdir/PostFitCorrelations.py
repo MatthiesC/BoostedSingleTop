@@ -67,9 +67,9 @@ def PlotPostFitCorrelations(model, dictIn, outputName):
         yAxis.SetBinLabel(i+1,lables[i])
     h_corr.SetMaximum(100.)
     h_corr.SetMinimum(-100.)
-    h_corr.SetMarkerSize(0.6)
-    h_corr.GetXaxis().SetLabelSize(0.015)
-    h_corr.GetYaxis().SetLabelSize(0.02)
+    h_corr.SetMarkerSize(1.2) # 0.6
+    h_corr.GetXaxis().SetLabelSize(0.04) # 0.015
+    h_corr.GetYaxis().SetLabelSize(0.04) # 0.02
     can = ROOT.TCanvas()
     xAxis.SetTicks("")
     yAxis.SetTicks("")

@@ -80,10 +80,10 @@ def run(fname_stat, outname_stat, write_report = False):
     print '============'
     print 'stat'
     print '============'
-    mle_output_stat = mle(model_stat, input='data', n=200, with_covariance=True, chi2=True, options=options, signal_process_groups ={'background_only':[]})
+    mle_output_stat = mle(model_stat, input='data', n=1, with_covariance=True, chi2=True, options=options, signal_process_groups ={'background_only':[]})
 
-    #print 'Results:'
-    #print mle_output_stat
+    print 'Results:'
+    print mle_output_stat
     #report.write_html('htmlout')
     
     PlotPostFitCorrelations(model_stat, mle_output_stat['background_only'], "fitResults/nuisance/Corr_"+n_name_stat)  
@@ -109,9 +109,13 @@ def run(fname_stat, outname_stat, write_report = False):
 #run("theta-input_stat.root", "theta-output_stat.root")
 #run("theta-input_Electron_1b_200to300.root", "theta-output_Electron_1b_200to300.root")
 
-channels = ["Electron", "Muon"]
-ptbins   = ["200to300", "300to400", "400to600", "600to1200"]
-nbtags   = ["1b", "2b"]
+#channels = ["Electron", "Muon"]
+#ptbins   = ["200to300", "300to400", "400to600", "600to1200"]
+#nbtags   = ["1b", "2b"]
+
+channels = ["Muon"]
+ptbins = ["300to400"]
+nbtags = ["2b"]
 
 for c in channels:
     for p in ptbins:

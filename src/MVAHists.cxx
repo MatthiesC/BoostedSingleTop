@@ -39,13 +39,13 @@ MVAHists::MVAHists(Context & ctx, const string & dirname):
   //char[] text_extension ("");
   
   // Top-jet distributions after BDT cut
-  H_nocuts_top_pt_1000 = book<TH1F>("nocuts_top_pt_1000", "top-jet p_{T} [GeV]", 1000, 200, 1200);
-  H_nocuts_top_pt_rebin = book<TH1F>("nocuts_top_pt_rebin", "top-jet p_{T} [GeV]", rebin_pt_bincount, rebin_pt);
-  H_nocuts_top_eta_1000 = book<TH1F>("nocuts_top_eta_1000", "top-jet #eta", 1000, -2.5, 2.5);
-  H_nocuts_top_eta_rebin = book<TH1F>("nocuts_top_eta_rebin", "top-jet #eta", rebin_eta_bincount, rebin_eta);
+  H_nocuts_top_pt_1000 = book<TH1F>("nocuts_top_pt_1000", "top-tagged HOTVR jet p_{T} [GeV]", 20, 200, 1200);
+  H_nocuts_top_pt_rebin = book<TH1F>("nocuts_top_pt_rebin", "top-tagged HOTVR jet p_{T} [GeV]", rebin_pt_bincount, rebin_pt);
+  H_nocuts_top_eta_1000 = book<TH1F>("nocuts_top_eta_1000", "top-tagged HOTVR jet #eta", 1000, -2.5, 2.5);
+  H_nocuts_top_eta_rebin = book<TH1F>("nocuts_top_eta_rebin", "top-tagged HOTVR jet #eta", rebin_eta_bincount, rebin_eta);
   H_nocuts_top_pt_vs_eta_1000 = book<TH2F>("nocuts_top_pt_vs_eta_1000", "top-jet p_{T} [GeV] vs. #eta", 1000, -2.5, 2.5, 1000, 200, 1200);
   H_nocuts_top_pt_vs_eta_rebin = book<TH2F>("nocuts_top_pt_vs_eta_rebin", "top-jet p_{T} [GeV] vs. #eta", rebin_eta_bincount, rebin_eta, rebin_pt_bincount, rebin_pt);
-  H_nocuts_top_mass = book<TH1F>("nocuts_top_mass", "top-jet mass [GeV]", 16, 140, 220);
+  H_nocuts_top_mass = book<TH1F>("nocuts_top_mass", "top-tagged HOTVR jet m_{jet} [GeV]", 28, 120, 260);
 
   H_nocuts_tmva_n_btags = book<TH1F>("nocuts_tmva_n_btags", "number of medium CSV b-tags", 6, 0.5, 6.5);
   H_nocuts_tmva_deltaPhi_leptonbottom = book<TH1F>("nocuts_tmva_deltaPhi_leptonbottom", "#Delta#phi(l,b) [rad]", 40, 0, M_PI);
@@ -58,13 +58,13 @@ MVAHists::MVAHists(Context & ctx, const string & dirname):
   H_nocuts_tmva_deltaPhi_leptonnextjet = book<TH1F>("nocuts_tmva_deltaPhi_leptonnextjet", "#Delta#phi(l,jet) [rad]", 40, 0, M_PI);
   H_nocuts_tmva_met_pt = book<TH1F>("nocuts_tmva_met_pt", "missing E_{T} [GeV]", 48, 0, 600);
 
-  H_BDTcut_top_pt_1000 = book<TH1F>("BDTcut_top_pt_1000", "top-jet p_{T} [GeV]", 1000, 200, 1200);
-  H_BDTcut_top_pt_rebin = book<TH1F>("BDTcut_top_pt_rebin", "top-jet p_{T} [GeV]", rebin_pt_bincount, rebin_pt);
-  H_BDTcut_top_eta_1000 = book<TH1F>("BDTcut_top_eta_1000", "top-jet #eta", 1000, -2.5, 2.5);
-  H_BDTcut_top_eta_rebin = book<TH1F>("BDTcut_top_eta_rebin", "top-jet #eta", rebin_eta_bincount, rebin_eta);
+  H_BDTcut_top_pt_1000 = book<TH1F>("BDTcut_top_pt_1000", "top-tagged HOTVR jet p_{T} [GeV]", 20, 200, 1200);
+  H_BDTcut_top_pt_rebin = book<TH1F>("BDTcut_top_pt_rebin", "top-tagged HOTVR jet p_{T} [GeV]", rebin_pt_bincount, rebin_pt);
+  H_BDTcut_top_eta_1000 = book<TH1F>("BDTcut_top_eta_1000", "top-tagged HOTVR jet #eta", 1000, -2.5, 2.5);
+  H_BDTcut_top_eta_rebin = book<TH1F>("BDTcut_top_eta_rebin", "top-tagged HOTVR jet #eta", rebin_eta_bincount, rebin_eta);
   H_BDTcut_top_pt_vs_eta_1000 = book<TH2F>("BDTcut_top_pt_vs_eta_1000", "top-jet p_{T} [GeV] vs. #eta", 1000, -2.5, 2.5, 1000, 200, 1200);
   H_BDTcut_top_pt_vs_eta_rebin = book<TH2F>("BDTcut_top_pt_vs_eta_rebin", "top-jet p_{T} [GeV] vs. #eta", rebin_eta_bincount, rebin_eta, rebin_pt_bincount, rebin_pt);
-  H_BDTcut_top_mass = book<TH1F>("BDTcut_top_mass", "top-jet mass [GeV]", 16, 140, 220);
+  H_BDTcut_top_mass = book<TH1F>("BDTcut_top_mass", "top-tagged HOTVR jet m_{jet} [GeV]", 28, 120, 260);
 
   H_BDTcut_tmva_n_btags = book<TH1F>("BDTcut_tmva_n_btags", "number of medium CSV b-tags", 6, 0.5, 6.5);
   H_BDTcut_tmva_deltaPhi_leptonbottom = book<TH1F>("BDTcut_tmva_deltaPhi_leptonbottom", "#Delta#phi(l,b) [rad]", 40, 0, M_PI);

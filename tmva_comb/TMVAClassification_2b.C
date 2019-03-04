@@ -216,7 +216,7 @@ int TMVAClassification_2b( TString myMethodList = "" )
    // --- Here the preparation phase begins
 
    // Create a ROOT output file where TMVA will store ntuples, histograms, etc.
-   TString outfileName( "TMVAOutput_2b.root" );
+   TString outfileName( "TMVAOutput_2b_new.root" );
    TFile* outputFile = TFile::Open( outfileName, "RECREATE" );
 
    // Create the factory object. Later you can choose the methods

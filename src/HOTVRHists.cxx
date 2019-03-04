@@ -28,13 +28,14 @@ HOTVRHists::HOTVRHists(Context & ctx, const string & dirname, const boost::optio
   // book all histograms here
 
   // HOTVR hists
-  N_HotvrTopjets          = book<TH1F>("N_HOTVR",           "number of top jets", 10, -0.5, 9.5);
+  N_HotvrTopjetsTag       = book<TH1F>("N_HOTVRtag",           "number of top-tagged HOTVR jets", 10, -0.5, 9.5);
+  N_HotvrTopjets          = book<TH1F>("N_HOTVR",           "number of HOTVR jets", 10, -0.5, 9.5);
 
-  Pt_HotvrTopjets         = book<TH1F>("Pt_HOTVR",          "top-jet p_{T} [GeV]", 32, 0, 1600);
-  Eta_HotvrTopjets        = book<TH1F>("Eta_HOTVR",         "top-jet #eta", 25, -2.5, 2.5);
-  Pt_vs_Eta_HotvrTopjets  = book<TH2F>("Pt_vs_Eta_HOTVR",   "top-jet p_{T} [GeV] vs. #eta", 32, 0, 1600, 25, -2.5, 2.5);
-  M_HotvrTopjets          = book<TH1F>("M_HOTVR",           "top-jet mass [GeV]", 24, 120, 240);
-  A_HotvrTopjets          = book<TH1F>("A_HOTVR",           "top-jet area", 30, 0, 15);
+  Pt_HotvrTopjets         = book<TH1F>("Pt_HOTVR",          "HOTVR jet p_{T} [GeV]", 32, 0, 1600);
+  Eta_HotvrTopjets        = book<TH1F>("Eta_HOTVR",         "top-tagged HOTVT jet #eta", 25, -2.5, 2.5);
+  Pt_vs_Eta_HotvrTopjets  = book<TH2F>("Pt_vs_Eta_HOTVR",   "top-jagged HOTVR jet p_{T} [GeV] vs. #eta", 32, 0, 1600, 25, -2.5, 2.5);
+  M_HotvrTopjets          = book<TH1F>("M_HOTVR",           "top-tagged HOTVR jet m_{jet} [GeV]", 24, 120, 240);
+  A_HotvrTopjets          = book<TH1F>("A_HOTVR",           "top-tagged HOTVR jet area", 30, 0, 15);
   NSub_HotvrTopjets       = book<TH1F>("NSub_HOTVR",        "number of sub-jets", 10, -0.5, 9.5);
   Fpt_HotvrTopjets        = book<TH1F>("Fpt_HOTVR",         "leading sub-jet p_{T} fraction", 20, 0, 1);
   Mpair_HotvrTopjets      = book<TH1F>("Mpair_HOTVR",       "min. m_{ij} [GeV]", 40, 0, 200);
@@ -49,11 +50,11 @@ HOTVRHists::HOTVRHists(Context & ctx, const string & dirname, const boost::optio
   DeltaR_Lepton_HotvrTopjets   = book<TH1F>("DeltaR_Lepton_HOTVR",   "#DeltaR(lepton, top-jet)", 40, 0, 8);
   DeltaPhi_Lepton_HotvrTopjets = book<TH1F>("DeltaPhi_Lepton_HOTVR", "#Delta#phi(lepton, top-jet)", 32, 0, M_PI);
 
-  Pt_HotvrTopjet1         = book<TH1F>("Pt_HOTVR1",         "top-jet p_{T} [GeV]", 32, 0, 1600);
-  Eta_HotvrTopjet1        = book<TH1F>("Eta_HOTVR1",        "top-jet #eta", 25, -2.5, 2.5);
-  Pt_vs_Eta_HotvrTopjet1  = book<TH2F>("Pt_vs_Eta_HOTVR1",  "top-jet p_{T} [GeV] vs. #eta", 32, 0, 1600, 25, -2.5, 2.5);
-  M_HotvrTopjet1          = book<TH1F>("M_HOTVR1",          "top-jet mass [GeV]", 24, 120, 240);
-  A_HotvrTopjet1          = book<TH1F>("A_HOTVR1",          "top-jet area", 30, 0, 15);
+  Pt_HotvrTopjet1         = book<TH1F>("Pt_HOTVR1",         "top-tagged HOTVR jet p_{T} [GeV]", 32, 0, 1600);
+  Eta_HotvrTopjet1        = book<TH1F>("Eta_HOTVR1",        "top-tagged HOTVR jet #eta", 25, -2.5, 2.5);
+  Pt_vs_Eta_HotvrTopjet1  = book<TH2F>("Pt_vs_Eta_HOTVR1",  "top-tagged HOTVR jet p_{T} [GeV] vs. #eta", 32, 0, 1600, 25, -2.5, 2.5);
+  M_HotvrTopjet1          = book<TH1F>("M_HOTVR1",          "top-tagged HOTVR jet m_{jet} [GeV]", 28, 120, 260);
+  A_HotvrTopjet1          = book<TH1F>("A_HOTVR1",          "top-tagged HOTVR jet area", 30, 0, 15);
   NSub_HotvrTopjet1       = book<TH1F>("NSub_HOTVR1",       "number of sub-jets", 10, -0.5, 9.5);
   Fpt_HotvrTopjet1        = book<TH1F>("Fpt_HOTVR1",        "leading sub-jet f_{pT}", 20, 0, 1);
   Mpair_HotvrTopjet1      = book<TH1F>("Mpair_HOTVR1",      "min. m_{ij} [GeV]", 40,  0, 200);
@@ -139,11 +140,11 @@ HOTVRHists::HOTVRHists(Context & ctx, const string & dirname, const boost::optio
   // if (N_bjets >= 1 && N_topjets == 1)
   //   {
   // top-jet
-  h_top_pt = book<TH1F>("top_pt", "top-jet p_{T} [GeV]", 32, 0, 1600);
-  h_top_eta = book<TH1F>("top_eta", "top-jet #eta", 25, -2.5, 2.5);
-  h_top_pt_vs_eta = book<TH2F>("top_pt_vs_eta", "top-jet p_{T} vs. #eta", 32, 0, 1600, 25, -2.5, 2.5);
-  h_top_m = book<TH1F>("top_m", "top-jet mass [GeV]", 24,  120, 240);
-  h_top_a = book<TH1F>("top_a", "top-jet area", 30, 0, 15);
+  h_top_pt = book<TH1F>("top_pt", "top-tagged HOTVR jet p_{T} [GeV]", 32, 0, 1600);
+  h_top_eta = book<TH1F>("top_eta", "top-tagged HOTVR jet #eta", 25, -2.5, 2.5);
+  h_top_pt_vs_eta = book<TH2F>("top_pt_vs_eta", "top-tagged HOTVR jet p_{T} vs. #eta", 32, 0, 1600, 25, -2.5, 2.5);
+  h_top_m = book<TH1F>("top_m", "top-tagged HOTVR jet m_{jet} [GeV]", 24,  120, 240);
+  h_top_a = book<TH1F>("top_a", "top-tagged HOTVR jet area", 30, 0, 15);
   h_top_nsub = book<TH1F>("top_nsub", "number of sub-jets", 10, -0.5, 9.5);
   h_top_fpt = book<TH1F>("top_fpt", "leading sub-jet p_{T} fraction", 20, 0, 1);
   h_top_mpair = book<TH1F>("top_mpair", "min. m_{ij} [GeV]", 40, 0, 200);
@@ -720,7 +721,7 @@ void HOTVRHists::fill(const Event & event) {
       
     }
   N_HotvrTopjets->Fill(n_jets, weight);
-
+  N_HotvrTopjetsTag->Fill(n_jets, weight);
 }
 
 HOTVRHists::~HOTVRHists(){}
@@ -855,7 +856,7 @@ void HOTVRGenHists::fill(const Event & event) {
       
     }
   N_HotvrTopjets->Fill(n_jets, weight);
-
+  N_HotvrTopjetsTag->Fill(n_jets, weight);
 
 }
 

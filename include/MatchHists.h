@@ -23,6 +23,7 @@ namespace uhh2 {
     MatchHists(uhh2::Context & ctx, const std::string & dirname, const boost::optional<TopJetId> & topjetid = boost::none);
 
     virtual void fill(const uhh2::Event & e) override;
+    virtual void fill_(const uhh2::Event & e, const LorentzVector & neutrinoRec);
     virtual ~MatchHists();
 
     bool is_tw, is_tt;
@@ -39,6 +40,9 @@ namespace uhh2 {
     TH1F *H_match_deltaR_lep, *H_match_deltaR_top;
     TH1F *H_match_deltaPhi_lep, *H_match_deltaPhi_top, *H_match_deltaPhi_neu;
     TH1F *h_TopPt_GenAndReco;
+   TH1F *h_SignalMatching_Top;
+   TH1F *h_SignalMatching_Lepton;
+   TH1F *h_SignalMatching_Neutrino;
 
   };
    

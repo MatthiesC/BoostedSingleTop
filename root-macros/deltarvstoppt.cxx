@@ -15,6 +15,7 @@ void deltarvstoppt() {
   Double_t margin = 0.1;
   p->SetMargin(0.2,0.2,0.1,0.1);
   p->Draw();
+  p->SetTicks(1,1);
   p->cd();
   //gPad->SetFrameFillColor(0);
 

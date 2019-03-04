@@ -93,11 +93,11 @@ class ThetaPostFitPlot():
         ax_2.SetTitle('post-fit nuisance parameters values')
         #ax_2.SetTitle('deviation in units of #sigma')
         ax_1.SetTitleSize(0.050)
-        ax_2.SetTitleSize(0.050)
+        ax_2.SetTitleSize(0.040) # 0.050
         ax_1.SetTitleOffset(1.4)
         ax_2.SetTitleOffset(1.0)
-        ax_1.SetLabelSize(0.03)
-        #ax_2.SetLabelSize(0.05)
+        ax_1.SetLabelSize(0.04) # 0.03
+        ax_2.SetLabelSize(0.03)
         ax_1.SetRangeUser(0, n_items+2)
         ax_2.SetRangeUser(-2.4, 2.4)
 

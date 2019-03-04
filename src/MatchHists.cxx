@@ -63,9 +63,15 @@ MatchHists::MatchHists(Context & ctx, const string & dirname, const boost::optio
   H_match_deltaPhi_neu = book<TH1F>("match_Phi_neu", "#Delta#phi(#nu^{reco}, #nu^{gen})", 10, -M_PI, M_PI);
 
   h_TopPt_GenAndReco =  book<TH1F>("TopPt_GenAndReco", "top quark p_{T}^{gen} [GeV]", rebin_pt_bincount, rebin_pt);
+
+  h_SignalMatching_Top = book<TH1F>("SignalMatching_Top", "#DeltaR(top gen, top rec)", 50, 0, 5);
+  h_SignalMatching_Lepton = book<TH1F>("SignalMatching_Lepton", "#DeltaR(lep gen, lep rec)", 50, 0, 5);
+  h_SignalMatching_Neutrino = book<TH1F>("SignalMatching_Neutrino", "#DeltaR(neu gen, neu rec)", 50, 0, 5);
 }
 
-void MatchHists::fill(const Event & e)
+void MatchHists::fill(const Event & e){}
+
+void MatchHists::fill_(const Event & e, const LorentzVector & neutrinoRec)
 {
   double w = e.weight;
 
@@ -88,11 +94,11 @@ void MatchHists::fill(const Event & e)
     }
   sort_by_pt<TopJet>(toptaggedjets);
   MET met = *e.met;
-  const CSVBTag btag_tight(CSVBTag::WP_TIGHT);
+  const CSVBTag btagid(CSVBTag::WP_MEDIUM);
   int n_btags = 0;
   for (Jet jet : jets)
     {
-      if (btag_tight(jet, e))
+      if (btagid(jet, e))
 	{
 	  bjets.push_back(jet);
 	  ++n_btags;
@@ -261,6 +267,9 @@ void MatchHists::fill(const Event & e)
 	  {
 	    h_TopPt_GenAndReco->Fill(top.Pt(), w); // plot that helps to calculate the purity
 	  }
+	h_SignalMatching_Top->Fill(deltaR(top,hotvrjet), w);
+	h_SignalMatching_Lepton->Fill(deltaR(lepton,primlept), w);
+	h_SignalMatching_Neutrino->Fill(deltaR(neutrinoRec,neutrino), w);
       }
   }
 

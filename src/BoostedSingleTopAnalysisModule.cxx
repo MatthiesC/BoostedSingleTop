@@ -87,7 +87,7 @@ namespace uhh2 {
   
 
     // --- Selections and Histogramms --- //
-    std::unique_ptr<AndHists> hist_presel, hist_nbjetcut_loose, hist_nbjetcut_medium; //hist_2bjetcut_tight, hist_1bjetcut_tight; 
+    std::unique_ptr<AndHists> hist_presel, hist_presel_btagSF, hist_nbjetcut_loose, hist_nbjetcut_medium; //hist_2bjetcut_tight, hist_1bjetcut_tight; 
     std::unique_ptr<MatchHists> hist_match_tw, hist_match_tw_1b, hist_match_tw_2b, hist_match_tt;
     std::unique_ptr<MVAHists> hist_mva_0t1b, hist_mva_0t2b, hist_mva_1t, hist_mva_1t1b, hist_mva_1t2b;
     std::unique_ptr<Hists> hist_BTagMCEfficiency;
@@ -232,6 +232,9 @@ namespace uhh2 {
     hist_presel.reset(new AndHists(ctx, "PreSel"));
     hist_presel->add_hist(new HOTVRHists(ctx, "PreSel_HOTVRtagged", id_toptag));
 
+    hist_presel_btagSF.reset(new AndHists(ctx, "PreSel_btagSF"));
+    hist_presel_btagSF->add_hist(new HOTVRHists(ctx, "PreSel_btagSF_HOTVRtagged", id_toptag));
+
     hist_BTagMCEfficiency.reset(new BTagMCEfficiencyHists(ctx, "BTagMCEfficiency", btag_wp_medium)); // btag_wp_tight, btag_wp_medium
 
     sel_nbjetcut_medium.reset(new NJetSelection(1, -1, id_btag_medium)); // id_btag_tight
@@ -324,8 +327,12 @@ namespace uhh2 {
 
     hist_BTagMCEfficiency->fill(event);
 
-    if(!sel_nbjetcut_medium->passes(event)) return false;
     sf_btag_medium->process(event);
+
+    hist_presel_btagSF->fill(event);
+
+    if(!sel_nbjetcut_medium->passes(event)) return false;
+    //sf_btag_medium->process(event);
     hist_nbjetcut_medium->fill(event);
 
 
@@ -404,6 +411,7 @@ namespace uhh2 {
     vector<LorentzVector> nus = NeutrinoReconstruction(lepton.v4(), met);
     vector<double> M_LepNuB;
     vector<double> M_Wass, Pt_Wass;
+    LorentzVector neutrinoRec;
     for (LorentzVector neutrino : nus)
       {
 	// LepNuB reconstruction
@@ -411,6 +419,7 @@ namespace uhh2 {
 	// Wass reconstruction
 	M_Wass.push_back((lepton.v4() + neutrino).M());
 	Pt_Wass.push_back((lepton.v4() + neutrino).Pt());
+	neutrinoRec = neutrino;
       }
     if(nus.size() == 2)
       {
@@ -419,6 +428,7 @@ namespace uhh2 {
 	  {
 	    swap(Pt_Wass.at(0), Pt_Wass.at(1));
 	    swap(M_LepNuB.at(0), M_LepNuB.at(1));
+	    neutrinoRec = nus.at(1);
 	  }
       }
 
@@ -466,14 +476,14 @@ namespace uhh2 {
       if(dataset_name.find("SingleTop_T_tWch") == 0 || dataset_name.find("SingleTop_Tbar_tWch") == 0)
 	{
 	  SingleTopGen_tWchProd->process(event); // needs to be called before and match hists can be filled!!!
-	  hist_match_tw->fill(event);
-	  if(sel_1bjetcut_medium->passes(event)) hist_match_tw_1b->fill(event);
-	  else if(sel_2bjetcut_medium->passes(event)) hist_match_tw_2b->fill(event);
+	  hist_match_tw->fill_(event,neutrinoRec);
+	  if(sel_1bjetcut_medium->passes(event)) hist_match_tw_1b->fill_(event,neutrinoRec);
+	  else if(sel_2bjetcut_medium->passes(event)) hist_match_tw_2b->fill_(event,neutrinoRec);
 	}
       else if(dataset_name.find("TTbar") == 0) // find "xyz" at position 0 of name
 	{
 	  TTbarGenProd->process(event);
-	  hist_match_tt->fill(event);
+	  hist_match_tt->fill_(event,neutrinoRec);
 	}
     }
 
@@ -484,16 +494,16 @@ namespace uhh2 {
 	return false;
       } else if(sel_toptags_1->passes(event)) {
 	hist_mva_1t1b->fill_(event, mvaD_1b, mva_inputvars, (is_ele ? 0.15 : 0.10));
-	return false;
+	//return false;
       }
     }
     else if(sel_2bjetcut_medium->passes(event)) {
       if(sel_toptags_0->passes(event)) {
-	hist_mva_0t2b->fill_(event, mvaD_1b, mva_inputvars, 0);
+	hist_mva_0t2b->fill_(event, mvaD_2b, mva_inputvars, 0);
 	return false;
       } else if(sel_toptags_1->passes(event)) {
-	hist_mva_1t2b->fill_(event, mvaD_1b, mva_inputvars, (is_ele ? 0.35 : 0.30));
-	//return false;
+	hist_mva_1t2b->fill_(event, mvaD_2b, mva_inputvars, (is_ele ? 0.60 : 0.45));
+	return false;
       }
     }
 
