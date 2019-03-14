@@ -450,7 +450,7 @@ namespace uhh2 {
     event.set(h_tmva_ht_jets, ht_jets);
     event.set(h_tmva_met_pt, met_pt);
 
-    std::vector<double> mva_inputvars {n_btags_medium, deltaPhi(lepton.v4(), bjet0.v4()), deltaPhi(topjet, bjet0.v4()), M_LepNuB.at(0), pt_balance, Pt_Wass.at(0), lepton.v4().pt(), lepton.v4().eta(), deltaPhi(lepton, nextjet), met_pt};
+    std::vector<double> mva_inputvars {double(n_btags_medium), deltaPhi(lepton.v4(), bjet0.v4()), deltaPhi(topjet, bjet0.v4()), M_LepNuB.at(0), pt_balance, Pt_Wass.at(0), lepton.v4().pt(), lepton.v4().eta(), deltaPhi(lepton, nextjet), met_pt};
 
      //==================//
     // TMVA Application //
